@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { useDemoData } from '../hooks/useDemoData';
@@ -19,10 +19,29 @@ import {
   ShieldCheck,
   FileText,
   ExternalLink,
+  Printer,
+  Download,
 } from 'lucide-react';
 import type { GrievanceCategory } from '../types';
 import { OFFICIAL_SOURCES } from '../data/industryContent';
 import { triggerConfetti } from '../components/animations/Confetti';
+import {
+  buildInitialLetterFields,
+  buildGeneratedLetter,
+  getDefaultRecipientKeyForCategory,
+} from '../utils/grievanceLetterTemplates';
+import type {
+  LetterLanguage,
+  RecipientAuthorityKey,
+  EditableLetterFields,
+} from '../utils/grievanceLetterTemplates';
+import {
+  printApplicationLetter,
+  downloadOfflineApplicationDocument,
+} from '../utils/grievancePrintService';
+import { GrievanceLetterPreview } from '../components/grievance/GrievanceLetterPreview';
+import { GrievanceLetterEditor } from '../components/grievance/GrievanceLetterEditor';
+import { GrievanceLetterSummary } from '../components/grievance/GrievanceLetterSummary';
 
 export const GrievancePage: React.FC = () => {
   const { language, t } = useLanguage();
@@ -73,6 +92,98 @@ export const GrievancePage: React.FC = () => {
     { key: 'industrial_services', label: t.categories.industrial_services },
     { key: 'other', label: t.categories.other },
   ];
+
+  // Consistent reference number generated for this application letter & storage
+  const [referenceId, setReferenceId] = useState<string>(() => {
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+    return `DEMO-GRV-${randomDigits}`;
+  });
+
+  // Automatic Application Letter Generation States
+  const [letterLanguage, setLetterLanguage] = useState<LetterLanguage>(
+    language === 'mr' ? 'mr' : 'en'
+  );
+  const [selectedRecipientKey, setSelectedRecipientKey] = useState<RecipientAuthorityKey>(() =>
+    getDefaultRecipientKeyForCategory(category)
+  );
+  const [editedFields, setEditedFields] = useState<Record<LetterLanguage, EditableLetterFields | null>>({
+    mr: null,
+    en: null,
+  });
+  const [isEditingLetter, setIsEditingLetter] = useState(false);
+  const [isCustomEdited, setIsCustomEdited] = useState(false);
+  const [showRawSummary, setShowRawSummary] = useState(false);
+
+  const handleCategoryChange = (newCat: GrievanceCategory) => {
+    setCategory(newCat);
+    if (!isCustomEdited) {
+      setSelectedRecipientKey(getDefaultRecipientKeyForCategory(newCat));
+    }
+  };
+
+  const letterFormData = useMemo(
+    () => ({
+      businessName,
+      contactPerson,
+      designation,
+      email,
+      phone,
+      district,
+      industryType,
+      locationArea,
+      category,
+      subject,
+      departmentCategory,
+      incidentPeriod,
+      description,
+      files,
+      referenceId,
+    }),
+    [
+      businessName,
+      contactPerson,
+      designation,
+      email,
+      phone,
+      district,
+      industryType,
+      locationArea,
+      category,
+      subject,
+      departmentCategory,
+      incidentPeriod,
+      description,
+      files,
+      referenceId,
+    ]
+  );
+
+  const currentLetterFields = useMemo(() => {
+    if (editedFields[letterLanguage]) {
+      return editedFields[letterLanguage]!;
+    }
+    return buildInitialLetterFields(letterFormData, letterLanguage, selectedRecipientKey);
+  }, [editedFields, letterLanguage, letterFormData, selectedRecipientKey]);
+
+  const currentGeneratedLetter = useMemo(() => {
+    return buildGeneratedLetter(letterFormData, currentLetterFields, letterLanguage);
+  }, [letterFormData, currentLetterFields, letterLanguage]);
+
+  const handleDownloadPdf = async (targetLang: LetterLanguage) => {
+    const targetFields =
+      editedFields[targetLang] ||
+      buildInitialLetterFields(letterFormData, targetLang, selectedRecipientKey);
+    const targetLetter = buildGeneratedLetter(letterFormData, targetFields, targetLang);
+    await printApplicationLetter(targetLetter);
+  };
+
+  const handlePrintLetter = async () => {
+    await printApplicationLetter(currentGeneratedLetter);
+  };
+
+  const handleDownloadHtml = () => {
+    downloadOfflineApplicationDocument(currentGeneratedLetter);
+  };
 
   // Maharashtra Industrial Districts
   const districts = [
@@ -215,6 +326,7 @@ export const GrievancePage: React.FC = () => {
     setIsSubmitting(true);
     setTimeout(() => {
       const newRec = addGrievance({
+        referenceId,
         businessName,
         contactPerson,
         designation,
@@ -356,6 +468,46 @@ export const GrievancePage: React.FC = () => {
                   </span>
                 </div>
 
+                {/* Letter Download Actions on Success Screen */}
+                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 max-w-lg mx-auto space-y-2 text-center">
+                  <span className="text-xs font-bold text-[#111827] block">
+                    {language === 'mr'
+                      ? 'तयार केलेले अधिकृत अर्ज पत्र डाउनलोड करा:'
+                      : language === 'hi'
+                        ? 'तैयार किया गया आधिकारिक आवेदन पत्र डाउनलोड करें:'
+                        : 'Download Official Grievance Application Draft:'}
+                  </span>
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleDownloadPdf('mr')}
+                      icon={<Download className="w-3.5 h-3.5" />}
+                    >
+                      मराठी PDF
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleDownloadPdf('en')}
+                      icon={<Download className="w-3.5 h-3.5" />}
+                    >
+                      English PDF
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      size="sm"
+                      onClick={handlePrintLetter}
+                      icon={<Printer className="w-3.5 h-3.5" />}
+                    >
+                      {language === 'mr' ? 'प्रिंट' : 'Print'}
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Next Actions */}
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <Link to={`/track-complaint?ref=${submittedGrievance.referenceId}`}>
@@ -376,6 +528,10 @@ export const GrievancePage: React.FC = () => {
                       setSubject('');
                       setDescription('');
                       setFiles([]);
+                      setConsentAcknowledged(false);
+                      setReferenceId(`DEMO-GRV-${Math.floor(1000 + Math.random() * 9000)}`);
+                      setEditedFields({ mr: null, en: null });
+                      setIsCustomEdited(false);
                     }}
                   >
                     {language === 'mr'
@@ -691,7 +847,7 @@ export const GrievancePage: React.FC = () => {
                                   type="radio"
                                   name="grievanceCategory"
                                   checked={category === c.key}
-                                  onChange={() => setCategory(c.key)}
+                                  onChange={() => handleCategoryChange(c.key)}
                                   className="mt-0.5 text-[#E35914] focus:ring-[#E35914]"
                                 />
                                 <span>{c.label}</span>
@@ -894,97 +1050,188 @@ export const GrievancePage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* STEP 4: Review & Submit */}
+                  {/* STEP 4: Review, Auto-Generated Application Letter & Actions */}
                   {currentStep === 4 && (
-                    <div className="space-y-5 animate-in fade-in">
-                      <div className="border-b border-[#E2E8F0] pb-3">
-                        <h2 className="text-lg font-bold text-[#111827]">
-                          {language === 'mr'
-                            ? 'विभाग ड: तपशील तपासा व घोषणापत्र'
-                            : language === 'hi'
-                              ? 'अनुभाग D: विवरण जांचें और घोषणा'
-                              : 'Section D: Review and declaration'}
-                        </h2>
-                        <p className="text-xs text-[#64748B]">
-                          {language === 'mr'
-                            ? 'अर्ज सादर करण्यापूर्वी सर्व माहितीची पडताळणी करा.'
-                            : language === 'hi'
-                              ? 'आवेदन जमा करने से पहले सभी विवरणों की समीक्षा करें।'
-                              : 'Verify your submitted details before final submission.'}
-                        </p>
+                    <div className="space-y-6 animate-in fade-in">
+                      {/* 4A. Summary & Letter Generation Header */}
+                      <GrievanceLetterSummary
+                        referenceId={referenceId}
+                        applicantName={contactPerson}
+                        designation={designation}
+                        businessName={businessName}
+                        categoryLabel={
+                          categoriesList.find((c) => c.key === category)?.label || category
+                        }
+                        selectedRecipientKey={selectedRecipientKey}
+                        selectedLanguage={letterLanguage}
+                        documentsCount={files.length}
+                        isEditing={isEditingLetter}
+                        isCustomEdited={isCustomEdited}
+                        onLanguageChange={(newLang) => {
+                          setLetterLanguage(newLang);
+                        }}
+                        onRecipientKeyChange={(newKey) => {
+                          setSelectedRecipientKey(newKey);
+                          setEditedFields((prev) => ({
+                            ...prev,
+                            [letterLanguage]: null,
+                          }));
+                        }}
+                        onToggleEdit={() => setIsEditingLetter((prev) => !prev)}
+                        onDownloadPdf={handleDownloadPdf}
+                        onPrint={handlePrintLetter}
+                        onDownloadHtml={handleDownloadHtml}
+                        onResetDraft={() => {
+                          setEditedFields((prev) => ({
+                            ...prev,
+                            [letterLanguage]: null,
+                          }));
+                          setIsCustomEdited(false);
+                        }}
+                      />
+
+                      {/* Collapsible Submitted Form Data Summary */}
+                      <div className="bg-[#F8FAFC] rounded-2xl p-4 sm:p-5 border border-[#E2E8F0] space-y-3 text-xs">
+                        <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <FileCheck2 className="w-4 h-4 text-[#136938]" />
+                            <h3 className="font-bold text-sm text-[#111827]">
+                              {language === 'mr'
+                                ? 'नोंदवलेल्या माहितीचा मूळ तपशील (Grievance Form Data)'
+                                : language === 'hi'
+                                  ? 'दर्ज विवरण की समीक्षा (Grievance Form Data)'
+                                  : 'Submitted Grievance Form Data'}
+                            </h3>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setShowRawSummary((prev) => !prev)}
+                            className="text-xs text-[#E35914] hover:text-[#CC4D0E] font-bold cursor-pointer transition"
+                          >
+                            {showRawSummary
+                              ? language === 'mr'
+                                ? 'तपशील लपवा ▲'
+                                : 'Hide Details ▲'
+                              : language === 'mr'
+                                ? 'तपशील पहा ▼'
+                                : 'View Details ▼'}
+                          </button>
+                        </div>
+
+                        {showRawSummary && (
+                          <div className="space-y-3 pt-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-[#E2E8F0]">
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'उद्योग नाव:' : language === 'hi' ? 'उद्योग का नाम:' : 'Enterprise Name:'}
+                                </span>
+                                <span className="font-bold text-[#111827]">{businessName || '—'}</span>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'संपर्क व्यक्ती:' : language === 'hi' ? 'संपर्क व्यक्ति:' : 'Contact Person:'}
+                                </span>
+                                <span className="font-bold text-[#111827]">{contactPerson} ({designation})</span>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'संपर्क माहिती:' : language === 'hi' ? 'संपर्क विवरण:' : 'Contact Info:'}
+                                </span>
+                                <span className="font-medium text-[#111827]">{email} | {phone}</span>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'जिल्हा व स्थान:' : language === 'hi' ? 'ज़िला एवं स्थान:' : 'District & Location:'}
+                                </span>
+                                <span className="font-medium text-[#111827]">{district} - {locationArea}</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'तक्रारीचा वर्ग:' : language === 'hi' ? 'शिकायत श्रेणी:' : 'Grievance Category:'}
+                                </span>
+                                <span className="font-semibold text-[#E35914]">
+                                  {categoriesList.find((c) => c.key === category)?.label}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'मुख्य विषय:' : language === 'hi' ? 'मुख्य विषय:' : 'Subject:'}
+                                </span>
+                                <span className="font-bold text-[#111827]">{subject}</span>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'सविस्तर वर्णन:' : language === 'hi' ? 'विस्तृत विवरण:' : 'Description:'}
+                                </span>
+                                <p className="text-[#334155] whitespace-pre-wrap bg-white p-3 rounded-lg border border-[#E2E8F0] mt-1">
+                                  {description}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-[#64748B] block">
+                                  {language === 'mr' ? 'संलग्न फाईल्स:' : language === 'hi' ? 'संलग्न फ़ाइलें:' : 'Attached Files:'}
+                                </span>
+                                <span className="font-medium text-[#111827]">
+                                  {files.length > 0
+                                    ? language === 'mr'
+                                      ? `${files.length} फाईल्स संलग्न`
+                                      : `${files.length} files attached`
+                                    : language === 'mr'
+                                      ? 'कोणतीही फाईल जोडलेली नाही'
+                                      : 'No files attached'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Summary Table */}
-                      <div className="bg-[#F8FAFC] rounded-2xl p-4 sm:p-5 border border-[#E2E8F0] space-y-3 text-xs">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-[#E2E8F0]">
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'उद्योग नाव:' : language === 'hi' ? 'उद्योग का नाम:' : 'Enterprise Name:'}
+                      {/* 4B & 4C. Document Preview or Editor */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-bold text-sm text-[#111827] flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-[#E35914]" />
+                            <span>
+                              {isEditingLetter
+                                ? language === 'mr'
+                                  ? 'अर्जाचा मसुदा संपादन (Letter Draft Editor)'
+                                  : 'Edit Letter Draft'
+                                : language === 'mr'
+                                  ? 'तयार केलेला औपचारिक अर्ज (Official Application Preview)'
+                                  : 'Official Application Letter Preview'}
                             </span>
-                            <span className="font-bold text-[#111827]">{businessName}</span>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'संपर्क व्यक्ती:' : language === 'hi' ? 'संपर्क व्यक्ति:' : 'Contact Person:'}
-                            </span>
-                            <span className="font-bold text-[#111827]">{contactPerson} ({designation})</span>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'संपर्क माहिती:' : language === 'hi' ? 'संपर्क विवरण:' : 'Contact Info:'}
-                            </span>
-                            <span className="font-medium text-[#111827]">{email} | {phone}</span>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'जिल्हा व स्थान:' : language === 'hi' ? 'ज़िला एवं स्थान:' : 'District & Location:'}
-                            </span>
-                            <span className="font-medium text-[#111827]">{district} - {locationArea}</span>
-                          </div>
+                          </h3>
+                          <span className="text-xs text-[#64748B] font-medium">
+                            {letterLanguage === 'mr' ? 'भाषा: मराठी (देवनागरी)' : 'Language: English (Formal)'}
+                          </span>
                         </div>
 
-                        <div className="space-y-2">
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'तक्रारीचा वर्ग:' : language === 'hi' ? 'शिकायत श्रेणी:' : 'Grievance Category:'}
-                            </span>
-                            <span className="font-semibold text-[#E35914]">
-                              {categoriesList.find((c) => c.key === category)?.label}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'मुख्य विषय:' : language === 'hi' ? 'मुख्य विषय:' : 'Subject:'}
-                            </span>
-                            <span className="font-bold text-[#111827]">{subject}</span>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'सविस्तर वर्णन:' : language === 'hi' ? 'विस्तृत विवरण:' : 'Description:'}
-                            </span>
-                            <p className="text-[#334155] whitespace-pre-wrap bg-white p-3 rounded-lg border border-[#E2E8F0] mt-1">
-                              {description}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="text-[#64748B] block">
-                              {language === 'mr' ? 'संलग्न फाईल्स:' : language === 'hi' ? 'संलग्न फ़ाइलें:' : 'Attached Files:'}
-                            </span>
-                            <span className="font-medium text-[#111827]">
-                              {files.length > 0
-                                ? language === 'mr'
-                                  ? `${files.length} फाईल्स संलग्न`
-                                  : language === 'hi'
-                                    ? `${files.length} फ़ाइलें संलग्न`
-                                    : `${files.length} files attached`
-                                : language === 'mr'
-                                  ? 'कोणतीही फाईल जोडलेली नाही'
-                                  : language === 'hi'
-                                    ? 'कोई फ़ाइल संलग्न नहीं'
-                                    : 'No files attached'}
-                            </span>
-                          </div>
-                        </div>
+                        {isEditingLetter ? (
+                          <GrievanceLetterEditor
+                            fields={currentLetterFields}
+                            language={letterLanguage}
+                            onChange={(updated) => {
+                              setEditedFields((prev) => ({
+                                ...prev,
+                                [letterLanguage]: updated,
+                              }));
+                              setIsCustomEdited(true);
+                            }}
+                            onReset={() => {
+                              setEditedFields((prev) => ({
+                                ...prev,
+                                [letterLanguage]: null,
+                              }));
+                              setIsCustomEdited(false);
+                            }}
+                            onDoneEditing={() => setIsEditingLetter(false)}
+                          />
+                        ) : (
+                          <GrievanceLetterPreview letter={currentGeneratedLetter} />
+                        )}
                       </div>
 
                       {/* Declaration Checkbox */}
@@ -1057,10 +1304,10 @@ export const GrievancePage: React.FC = () => {
                         {isSubmitting
                           ? t.common.loading
                           : language === 'mr'
-                            ? 'तक्रार दाखल करा (Submit Grievance)'
+                            ? 'तक्रार दाखल व जतन करा (Complete & Save Application)'
                             : language === 'hi'
-                              ? 'शिकायत सबमिट करें (Submit Grievance)'
-                              : 'Submit Grievance'}
+                              ? 'शिकायत दर्ज व सहेजें (Complete & Save Application)'
+                              : 'Complete & Save Application'}
                       </Button>
                     )}
                   </div>
@@ -1070,7 +1317,7 @@ export const GrievancePage: React.FC = () => {
           </div>
 
           {/* Sidebar Column */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-6" data-no-print="true">
             <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-4">
               <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
                 <ShieldCheck className="w-5 h-5 text-[#136938]" />

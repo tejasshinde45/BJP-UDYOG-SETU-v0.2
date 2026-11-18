@@ -18,7 +18,7 @@ export interface DemoDataContextType {
     data: Omit<
       GrievanceRecord,
       'id' | 'referenceId' | 'submittedAt' | 'timeline' | 'followUps' | 'status' | 'isDemo'
-    >
+    > & { referenceId?: string }
   ) => GrievanceRecord;
   updateGrievance: (id: string, updates: Partial<GrievanceRecord>) => void;
   addFollowUp: (

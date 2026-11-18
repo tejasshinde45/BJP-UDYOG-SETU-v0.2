@@ -128,9 +128,9 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     data: Omit<
       GrievanceRecord,
       'id' | 'referenceId' | 'submittedAt' | 'timeline' | 'followUps' | 'status' | 'isDemo'
-    >
+    > & { referenceId?: string }
   ): GrievanceRecord => {
-    const refId = generateRefId('DEMO-GRV', grievances);
+    const refId = data.referenceId || generateRefId('DEMO-GRV', grievances);
     const now = new Date().toISOString();
     const newRecord: GrievanceRecord = {
       ...data,

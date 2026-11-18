@@ -380,3 +380,46 @@ body:has(.modal-scroll-lock) {
 .animate-stage-fade {
   animation: stage-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Print Stylesheet for Official Grievance Application Letter */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm 15mm 15mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide website navigation, chrome, sidebars, and action buttons */
+  header,
+  footer,
+  nav,
+  .no-print,
+  button:not(.allow-print),
+  aside,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  #letter-printable-area {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  .avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
