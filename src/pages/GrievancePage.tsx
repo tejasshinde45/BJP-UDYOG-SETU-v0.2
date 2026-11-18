@@ -5,6 +5,7 @@ import { useDemoData } from '../hooks/useDemoData';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { PageHeader } from '../components/ui/PageHeader';
 import {
   FileCheck2,
   CheckCircle2,
@@ -15,13 +16,13 @@ import {
   Check,
   ArrowRight,
   ArrowLeft,
-  Phone,
-  Clock,
   ShieldCheck,
   FileText,
-  Building,
+  ExternalLink,
 } from 'lucide-react';
 import type { GrievanceCategory } from '../types';
+import { OFFICIAL_SOURCES } from '../data/industryContent';
+import { triggerConfetti } from '../components/animations/Confetti';
 
 export const GrievancePage: React.FC = () => {
   const { language, t } = useLanguage();
@@ -124,7 +125,12 @@ export const GrievancePage: React.FC = () => {
     if (!description.trim()) {
       newErrors.description = t.common.requiredField;
     } else if (description.trim().length < 20) {
-      newErrors.description = language === 'mr' ? 'किमान २० अक्षरांचे सविस्तर वर्णन आवश्यक आहे' : 'Minimum 20 characters required';
+      newErrors.description =
+        language === 'mr'
+          ? 'किमान २० अक्षरांचे सविस्तर वर्णन आवश्यक आहे'
+          : language === 'hi'
+            ? 'कम से कम २० अक्षरों का विस्तृत विवरण आवश्यक है'
+            : 'Minimum 20 characters required';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -163,11 +169,23 @@ export const GrievancePage: React.FC = () => {
       const ext = f.name.split('.').pop()?.toLowerCase() || '';
 
       if (!allowedExtensions.includes(ext)) {
-        setFileError(`अवैध फाईल प्रकार (.${ext}). केवळ PDF, Word, JPG, PNG किंवा ZIP फाईल्स अनुमत आहेत.`);
+        setFileError(
+          language === 'mr'
+            ? `अवैध फाईल प्रकार (.${ext}). केवळ PDF, Word, JPG, PNG किंवा ZIP फाईल्स अनुमत आहेत.`
+            : language === 'hi'
+              ? `अमान्य फ़ाइल प्रकार (.${ext})। केवल PDF, Word, JPG, PNG या ZIP फ़ाइलें अनुमत हैं।`
+              : `Invalid file type (.${ext}). Only PDF, Word, JPG, PNG or ZIP files allowed.`
+        );
         return;
       }
       if (f.size > maxSizeBytes) {
-        setFileError(`फाईल ${f.name} चा आकार १० एमबी पेक्षा जास्त आहे.`);
+        setFileError(
+          language === 'mr'
+            ? `फाईल ${f.name} चा आकार १० एमबी पेक्षा जास्त आहे.`
+            : language === 'hi'
+              ? `फ़ाइल ${f.name} का आकार 10 MB से अधिक है।`
+              : `File ${f.name} size exceeds 10MB.`
+        );
         return;
       }
       newFiles.push({ name: f.name, size: f.size });
@@ -183,7 +201,14 @@ export const GrievancePage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!consentAcknowledged) {
-      setErrors({ consent: language === 'mr' ? 'कृपया वरील अटी मान्य असल्याचे निश्चित करा' : 'Please agree to the declaration' });
+      setErrors({
+        consent:
+          language === 'mr'
+            ? 'कृपया वरील अटी मान्य असल्याचे निश्चित करा'
+            : language === 'hi'
+              ? 'कृपया घोषणा की पुष्टि करें'
+              : 'Please agree to the declaration',
+      });
       return;
     }
 
@@ -212,6 +237,7 @@ export const GrievancePage: React.FC = () => {
         businessName: newRec.businessName,
         subject: newRec.subject,
       });
+      triggerConfetti();
       window.scrollTo({ top: 100, behavior: 'smooth' });
     }, 600);
   };
@@ -230,36 +256,27 @@ export const GrievancePage: React.FC = () => {
         <Breadcrumbs items={[{ label: t.nav.grievance }]} />
 
         {/* Hero Header Banner */}
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#E2E8F0] shadow-xs relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-[#E35914] via-[#F59E0B] to-[#136938]" />
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="space-y-2 max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF7ED] border border-[#FFEDD5] text-xs font-semibold text-[#E35914] font-label">
-                <FileCheck2 className="w-3.5 h-3.5" />
-                <span>{language === 'mr' ? 'गतिमान औद्योगिक समस्या निवारण व्यासपीठ' : 'FAST-TRACK ISSUE RESOLUTION DESK'}</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827]">
-                {language === 'mr' ? 'औद्योगिक तक्रार व अडचण नोंदणी' : 'Industrial Grievance Redressal Portal'}
-              </h1>
-              <p className="text-xs sm:text-sm text-[#475569] leading-relaxed">
-                {language === 'mr'
-                  ? 'एमआयडीसी पायाभूत सुविधा, रस्ते, वीज पुरवठा, औद्योगिक परवानग्या आणि प्रशासकीय अडचणींची थेट नोंद करा. नोंदणीनंतर आपल्याला अधिकृत संदर्भ क्रमांक प्राप्त होईल, ज्याद्वारे आपण २४/७ स्थिती तपासू शकाल.'
-                  : 'Submit operational bottlenecks regarding MIDC infrastructure, utilities, statutory clearances, or transport. You will receive an official tracking reference immediately upon registration.'}
-              </p>
+        <PageHeader
+          category={language === 'mr' ? 'औद्योगिक अडचण नोंद' : language === 'hi' ? 'औद्योगिक समस्या प्रविष्टि' : 'Industry issue entry'}
+          categoryIcon={<FileCheck2 className="h-3.5 w-3.5" />}
+          title={language === 'mr' ? 'औद्योगिक तक्रार व अडचण नोंदणी' : language === 'hi' ? 'औद्योगिक शिकायत और समस्या प्रविष्टि' : 'Industrial grievance and issue entry'}
+          description={
+            language === 'mr'
+              ? 'औद्योगिक पायाभूत सुविधा, सेवा किंवा प्रशासकीय अडचणींचे तपशील मार्गदर्शन व निवारणासाठी नोंदवा. वैधानिक तक्रारींसाठी अधिकृत RTS पोर्टल वापरावे.'
+              : language === 'hi'
+                ? 'औद्योगिक बुनियादी ढांचे, सेवाओं या प्रशासनिक समस्याओं का विवरण मार्गदर्शन के लिए दर्ज करें। वैधानिक शिकायतों के लिए आधिकारिक RTS पोर्टल का उपयोग करें।'
+                : 'Record an industrial infrastructure, service or administrative issue for guidance. For statutory appeals, please use the official RTS portal.'
+          }
+          actions={
+            <div className="hidden lg:block max-w-xs rounded-xl border border-emerald-200/80 bg-emerald-50/70 p-4 text-xs leading-relaxed text-[#136938] shadow-2xs">
+              {language === 'mr'
+                ? 'माहिती व मार्गदर्शन — वैधानिक तक्रारींसाठी अधिकृत शासकीय पोर्टल वापरावे.'
+                : language === 'hi'
+                  ? 'सूचना एवं मार्गदर्शन — वैधानिक शिकायतों के लिए आधिकारिक सरकारी पोर्टल का उपयोग करें।'
+                  : 'Information and guidance — statutory grievances must be filed via official portals.'}
             </div>
-
-            <div className="hidden lg:flex flex-col items-end gap-1.5 shrink-0 bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#136938]">
-                <Clock className="w-4 h-4" />
-                <span>प्राथमिक प्रतिसाद: २४ ते ४८ तास</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-[#64748B]">
-                <Phone className="w-3.5 h-3.5 text-[#E35914]" />
-                <span>हेल्पलाइन: १८००-२३३-०५५५</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* 2-Column Master Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -276,12 +293,12 @@ export const GrievancePage: React.FC = () => {
 
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-[#111827]">
-                    {language === 'mr' ? 'तक्रार अधिकृतपणे दाखल झाली!' : 'Grievance Successfully Registered!'}
+                    {language === 'mr' ? 'तक्रार नोंद सुरक्षित जतन झाली' : language === 'hi' ? 'शिकायत प्रविष्टि सुरक्षित सहेजी गई' : 'Grievance reference recorded'}
                   </h2>
                   <p className="text-xs sm:text-sm text-[#475569] max-w-lg mx-auto">
                     {language === 'mr'
-                      ? 'आपला तक्रार अर्ज उद्योग सेतू समन्वय कक्षाकडे यशस्वीरीत्या नोंदवला गेला आहे. भविष्यातील पाठपुराव्यासाठी खालील अधिकृत संदर्भ क्रमांक जतन करा:'
-                      : 'Your complaint has been assigned an official reference number. Use this ID to track real-time resolution progress and post follow-ups:'}
+                      ? 'ही नोंद उद्योग सेतू मंचावर जतन झाली आहे. सद्यस्थिती आणि पाठपुराव्यासाठी संदर्भ क्रमांक वापरा:'
+                      : language === 'hi' ? 'यह प्रविष्टि उद्योग सेतु मंच पर सहेज ली गई है। स्थिति और अनुवर्ती जानकारी के लिए संदर्भ संख्या का उपयोग करें:' : 'This entry is safely recorded. Use the reference number below to track details:'}
                   </p>
                 </div>
 
@@ -310,12 +327,20 @@ export const GrievancePage: React.FC = () => {
                     <span className="text-right text-[#334155]">{submittedGrievance.businessName}</span>
                   </div>
                   <div className="flex justify-between border-b border-[#E2E8F0] pb-1.5">
-                    <span className="font-semibold text-[#111827]">विषय:</span>
+                    <span className="font-semibold text-[#111827]">
+                      {language === 'mr' ? 'विषय:' : language === 'hi' ? 'विषय:' : 'Subject:'}
+                    </span>
                     <span className="text-right text-[#334155] line-clamp-1">{submittedGrievance.subject}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-semibold text-[#111827]">{t.common.status}:</span>
-                    <span className="text-[#136938] font-bold bg-[#F0FDF4] px-2 py-0.5 rounded text-[11px]">नोंदणीकृत (Registered)</span>
+                    <span className="text-[#136938] font-bold bg-[#F0FDF4] px-2 py-0.5 rounded text-[11px]">
+                      {language === 'mr'
+                        ? 'नोंदणीकृत (Registered)'
+                        : language === 'hi'
+                          ? 'पंजीकृत (Registered)'
+                          : 'Registered'}
+                    </span>
                   </div>
                 </div>
 
@@ -324,8 +349,10 @@ export const GrievancePage: React.FC = () => {
                   <ShieldCheck className="w-5 h-5 text-[#2563EB] shrink-0 mt-0.5" />
                   <span className="leading-relaxed">
                     {language === 'mr'
-                      ? 'आपल्या तक्रारीची प्रत संबंधित जिल्हा समन्वय अधिकारी व एमआयडीसी समन्वय डेस्ककडे पाठवण्यात आली आहे. पुढील २४ ते ४८ तासांत आपल्याशी संपर्क साधण्यात येईल.'
-                      : 'A copy of your grievance has been forwarded to the District Liaison Officer and MIDC desk. You will be contacted within 24-48 hours.'}
+                      ? 'ही नोंद उद्योग सेतू मंचावर सुरक्षित जतन होते; अधिकृत शासकीय निवारणासाठी संबंधित विभागाच्या RTS किंवा MAITRI पोर्टलचा वापर करावा.'
+                      : language === 'hi'
+                        ? 'यह प्रविष्टि उद्योग सेतु मंच पर सुरक्षित सहेजी जाती है; आधिकारिक शासकीय निवारण के लिए संबंधित विभाग के RTS या MAITRI पोर्टल का उपयोग करें।'
+                        : 'This record is preserved on Udyog Setu; for statutory grievance redressal, please utilize the official RTS or MAITRI portals.'}
                   </span>
                 </div>
 
@@ -333,7 +360,11 @@ export const GrievancePage: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <Link to={`/track-complaint?ref=${submittedGrievance.referenceId}`}>
                     <Button variant="primary" size="lg" icon={<ArrowRight className="w-4 h-4" />} iconPosition="right">
-                      {language === 'mr' ? 'तक्रारीची सद्यस्थिती तपासा' : 'Track This Complaint'}
+                      {language === 'mr'
+                        ? 'तक्रारीची सद्यस्थिती तपासा'
+                        : language === 'hi'
+                          ? 'शिकायत की स्थिति जांचें'
+                          : 'Track This Complaint'}
                     </Button>
                   </Link>
                   <Button
@@ -347,7 +378,11 @@ export const GrievancePage: React.FC = () => {
                       setFiles([]);
                     }}
                   >
-                    {language === 'mr' ? 'दुसरी तक्रार नोंदवा' : 'File Another Grievance'}
+                    {language === 'mr'
+                      ? 'दुसरी तक्रार नोंदवा'
+                      : language === 'hi'
+                        ? 'दूसरी शिकायत दर्ज करें'
+                        : 'File Another Grievance'}
                   </Button>
                 </div>
               </div>
@@ -358,10 +393,42 @@ export const GrievancePage: React.FC = () => {
                 <div className="bg-[#F8FAFC] border-b border-[#E2E8F0] px-4 py-4 sm:px-8">
                   <div className="grid grid-cols-4 gap-2">
                     {[
-                      { num: 1, label: language === 'mr' ? '१. उद्योग तपशील' : '1. Enterprise' },
-                      { num: 2, label: language === 'mr' ? '२. तक्रार स्वरूप' : '2. Grievance' },
-                      { num: 3, label: language === 'mr' ? '३. कागदपत्रे' : '3. Documents' },
-                      { num: 4, label: language === 'mr' ? '४. पडताळणी' : '4. Review' },
+                      {
+                        num: 1,
+                        label:
+                          language === 'mr'
+                            ? '१. उद्योग तपशील'
+                            : language === 'hi'
+                              ? '१. उद्योग विवरण'
+                              : '1. Enterprise',
+                      },
+                      {
+                        num: 2,
+                        label:
+                          language === 'mr'
+                            ? '२. तक्रार स्वरूप'
+                            : language === 'hi'
+                              ? '२. शिकायत विवरण'
+                              : '2. Grievance',
+                      },
+                      {
+                        num: 3,
+                        label:
+                          language === 'mr'
+                            ? '३. कागदपत्रे'
+                            : language === 'hi'
+                              ? '३. दस्तावेज'
+                              : '3. Documents',
+                      },
+                      {
+                        num: 4,
+                        label:
+                          language === 'mr'
+                            ? '४. पडताळणी'
+                            : language === 'hi'
+                              ? '४. समीक्षा'
+                              : '4. Review',
+                      },
                     ].map((s) => {
                       const isActive = currentStep === s.num;
                       const isCompleted = currentStep > s.num;
@@ -398,49 +465,97 @@ export const GrievancePage: React.FC = () => {
                     <div className="space-y-5 animate-in fade-in">
                       <div className="border-b border-[#E2E8F0] pb-3">
                         <h2 className="text-lg font-bold text-[#111827]">
-                          {language === 'mr' ? 'विभाग अ: उद्योजक व उद्योग घटकाचा तपशील' : 'Section A: Enterprise & Contact Details'}
+                          {language === 'mr'
+                            ? 'विभाग अ: उद्योजक व उद्योग घटकाचा तपशील'
+                            : language === 'hi'
+                              ? 'अनुभाग A: उद्यमी एवं उद्योग विवरण'
+                              : 'Section A: Enterprise & Contact Details'}
                         </h2>
                         <p className="text-xs text-[#64748B]">
                           {language === 'mr'
-                            ? 'आपल्या अधिकृत उद्योगाचे नाव, संपर्क अधिकारी आणि एमआयडीसी क्षेत्राची अचूक माहिती भरा.'
-                            : 'Provide enterprise information, key contact person, and industrial area location.'}
+                            ? 'आपल्या उद्योगाचे नाव, संपर्क अधिकारी आणि संबंधित क्षेत्राची माहिती भरा.'
+                            : language === 'hi'
+                              ? 'अपने उद्योग का नाम, संपर्क अधिकारी और संबंधित क्षेत्र का विवरण भरें।'
+                              : 'Provide enterprise information, key contact person, and industrial area location.'}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="sm:col-span-2">
                           <Input
-                            label={language === 'mr' ? 'उद्योग / आस्थापनेचे पूर्ण नाव *' : 'Enterprise / Company Name *'}
+                            label={
+                              language === 'mr'
+                                ? 'उद्योग / आस्थापनेचे पूर्ण नाव *'
+                                : language === 'hi'
+                                  ? 'उद्योग / प्रतिष्ठान का पूरा नाम *'
+                                  : 'Enterprise / Company Name *'
+                            }
                             value={businessName}
                             onChange={(e) => setBusinessName(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. सह्याद्री इंजिनिअरिंग प्रायव्हेट लिमिटेड' : 'e.g. Sahyadri Engineering Pvt Ltd'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. सह्याद्री इंजिनिअरिंग प्रायव्हेट लिमिटेड'
+                                : language === 'hi'
+                                  ? 'उदा. सह्याद्री इंजीनियरिंग प्राइवेट लिमिटेड'
+                                  : 'e.g. Sahyadri Engineering Pvt Ltd'
+                            }
                             error={errors.businessName}
                           />
                         </div>
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'संपर्क व्यक्तीचे पूर्ण नाव *' : 'Contact Person Name *'}
+                            label={
+                              language === 'mr'
+                                ? 'संपर्क व्यक्तीचे पूर्ण नाव *'
+                                : language === 'hi'
+                                  ? 'संपर्क व्यक्ति का पूरा नाम *'
+                                  : 'Contact Person Name *'
+                            }
                             value={contactPerson}
                             onChange={(e) => setContactPerson(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. श्री. संजय देशपांडे' : 'e.g. Sanjay Deshpande'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. श्री. संजय देशपांडे'
+                                : language === 'hi'
+                                  ? 'उदा. श्री संजय देशपांडे'
+                                  : 'e.g. Sanjay Deshpande'
+                            }
                             error={errors.contactPerson}
                           />
                         </div>
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'पदनाम *' : 'Designation *'}
+                            label={
+                              language === 'mr'
+                                ? 'पदनाम *'
+                                : language === 'hi'
+                                  ? 'पदनाम *'
+                                  : 'Designation *'
+                            }
                             value={designation}
                             onChange={(e) => setDesignation(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. व्यवस्थापकीय संचालक / पार्टनर' : 'e.g. Managing Director'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. व्यवस्थापकीय संचालक / पार्टनर'
+                                : language === 'hi'
+                                  ? 'उदा. प्रबंध निदेशक / पार्टनर'
+                                  : 'e.g. Managing Director'
+                            }
                             error={errors.designation}
                           />
                         </div>
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'ईमेल पत्ता *' : 'Official Email *'}
+                            label={
+                              language === 'mr'
+                                ? 'ईमेल पत्ता *'
+                                : language === 'hi'
+                                  ? 'ईमेल पता *'
+                                  : 'Business email *'
+                            }
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -451,7 +566,13 @@ export const GrievancePage: React.FC = () => {
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'मोबाईल क्रमांक *' : 'Phone Number (10 digits) *'}
+                            label={
+                              language === 'mr'
+                                ? 'मोबाईल क्रमांक *'
+                                : language === 'hi'
+                                  ? 'मोबाइल नंबर *'
+                                  : 'Phone Number (10 digits) *'
+                            }
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder="9822012345"
@@ -461,7 +582,11 @@ export const GrievancePage: React.FC = () => {
 
                         <div>
                           <label className="block text-xs font-semibold text-[#334155] mb-1.5">
-                            {language === 'mr' ? 'जिल्हा निवडा *' : 'Select District *'}
+                            {language === 'mr'
+                              ? 'जिल्हा निवडा *'
+                              : language === 'hi'
+                                ? 'ज़िला चुनें *'
+                                : 'Select District *'}
                           </label>
                           <select
                             value={district}
@@ -478,20 +603,44 @@ export const GrievancePage: React.FC = () => {
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'उद्योग क्षेत्र (उदा. ऑटो, केमिकल, टेक्स्टाईल) *' : 'Industry Sector *'}
+                            label={
+                              language === 'mr'
+                                ? 'उद्योग क्षेत्र (उदा. ऑटो, केमिकल, टेक्स्टाईल) *'
+                                : language === 'hi'
+                                  ? 'उद्योग क्षेत्र (उदा. ऑटो, केमिकल, टेक्सटाइल) *'
+                                  : 'Industry Sector *'
+                            }
                             value={industryType}
                             onChange={(e) => setIndustryType(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. अचूक अभियांत्रिकी व ऑटो कंपोनंट्स' : 'e.g. Precision Engineering'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. अचूक अभियांत्रिकी व ऑटो कंपोनंट्स'
+                                : language === 'hi'
+                                  ? 'उदा. सटीक इंजीनियरिंग एवं ऑटो कंपोनेंट्स'
+                                  : 'e.g. Precision Engineering'
+                            }
                             error={errors.industryType}
                           />
                         </div>
 
                         <div className="sm:col-span-2">
                           <Input
-                            label={language === 'mr' ? 'औद्योगिक वसाहत / MIDC पत्ता *' : 'Industrial Area / MIDC Location *'}
+                            label={
+                              language === 'mr'
+                                ? 'औद्योगिक वसाहत / MIDC पत्ता *'
+                                : language === 'hi'
+                                  ? 'औद्योगिक एस्टेट / MIDC पता *'
+                                  : 'Industrial Area / MIDC Location *'
+                            }
                             value={locationArea}
                             onChange={(e) => setLocationArea(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. भोसरी MIDC, ब्लॉक टी, प्लॉट क्र. ४५, पुणे' : 'e.g. Bhosari MIDC, Block T, Plot 45'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. भोसरी MIDC, ब्लॉक टी, प्लॉट क्र. ४५, पुणे'
+                                : language === 'hi'
+                                  ? 'उदा. भोसरी MIDC, ब्लॉक टी, प्लॉट क्र. ४५, पुणे'
+                                  : 'e.g. Bhosari MIDC, Block T, Plot 45'
+                            }
                             error={errors.locationArea}
                           />
                         </div>
@@ -504,19 +653,29 @@ export const GrievancePage: React.FC = () => {
                     <div className="space-y-5 animate-in fade-in">
                       <div className="border-b border-[#E2E8F0] pb-3">
                         <h2 className="text-lg font-bold text-[#111827]">
-                          {language === 'mr' ? 'विभाग ब: तक्रारीचे स्वरूप व तपशील' : 'Section B: Grievance Specifics'}
+                          {language === 'mr'
+                            ? 'विभाग ब: तक्रारीचे स्वरूप व तपशील'
+                            : language === 'hi'
+                              ? 'अनुभाग B: शिकायत का स्वरूप एवं विवरण'
+                              : 'Section B: Grievance Specifics'}
                         </h2>
                         <p className="text-xs text-[#64748B]">
                           {language === 'mr'
                             ? 'आपल्या समस्येचा प्रकार, संबंधित विभाग आणि अडचणीचे सविस्तर वर्णन नोंदवा.'
-                            : 'Select grievance category and provide comprehensive issue description.'}
+                            : language === 'hi'
+                              ? 'अपनी समस्या का प्रकार, संबंधित विभाग और समस्या का विस्तृत विवरण दर्ज करें।'
+                              : 'Select grievance category and provide comprehensive issue description.'}
                         </p>
                       </div>
 
                       <div className="space-y-4">
                         <div>
                           <label className="block text-xs font-semibold text-[#334155] mb-1.5">
-                            {language === 'mr' ? 'तक्रारीचा मुख्य वर्ग निवडा *' : 'Grievance Category *'}
+                            {language === 'mr'
+                              ? 'तक्रारीचा मुख्य वर्ग निवडा *'
+                              : language === 'hi'
+                                ? 'शिकायत की मुख्य श्रेणी चुनें *'
+                                : 'Grievance Category *'}
                           </label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {categoriesList.map((c) => (
@@ -543,10 +702,22 @@ export const GrievancePage: React.FC = () => {
 
                         <div>
                           <Input
-                            label={language === 'mr' ? 'तक्रारीचा मुख्य विषय *' : 'Subject of Grievance *'}
+                            label={
+                              language === 'mr'
+                                ? 'तक्रारीचा मुख्य विषय *'
+                                : language === 'hi'
+                                  ? 'शिकायत का मुख्य विषय *'
+                                  : 'Subject of Grievance *'
+                            }
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
-                            placeholder={language === 'mr' ? 'उदा. भोसरी सेक्टर ७ मधील २२ केव्ही मुख्य फिडरचे वारंवार ट्रिपिंग' : 'e.g. 22kV Feeder frequent tripping'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'उदा. भोसरी सेक्टर ७ मधील २२ केव्ही मुख्य फिडरचे वारंवार ट्रिपिंग'
+                                : language === 'hi'
+                                  ? 'उदा. भोसरी सेक्टर ७ में २२ केवी मुख्य फीडर का बार-बार ट्रिप होना'
+                                  : 'e.g. 22kV Feeder frequent tripping'
+                            }
                             error={errors.subject}
                           />
                         </div>
@@ -554,7 +725,11 @@ export const GrievancePage: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-semibold text-[#334155] mb-1.5">
-                              {language === 'mr' ? 'संबंधित शासकीय / MIDC विभाग' : 'Relevant Department'}
+                              {language === 'mr'
+                                ? 'संबंधित शासकीय / MIDC विभाग'
+                                : language === 'hi'
+                                  ? 'संबंधित सरकारी / MIDC विभाग'
+                                  : 'Relevant Department'}
                             </label>
                             <select
                               value={departmentCategory}
@@ -572,23 +747,45 @@ export const GrievancePage: React.FC = () => {
 
                           <div>
                             <Input
-                              label={language === 'mr' ? 'अडचण उद्भवल्याचा अंदाजे कालावधी' : 'Period / Date of Issue'}
+                              label={
+                                language === 'mr'
+                                  ? 'अडचण उद्भवल्याचा अंदाजे कालावधी'
+                                  : language === 'hi'
+                                    ? 'समस्या शुरू होने की अनुमानित अवधि'
+                                    : 'Period / Date of Issue'
+                              }
                               value={incidentPeriod}
                               onChange={(e) => setIncidentPeriod(e.target.value)}
-                              placeholder={language === 'mr' ? 'उदा. ऑक्टोबर २०२६ (मागील ३ आठवडे)' : 'e.g. Past 3 weeks'}
+                              placeholder={
+                                language === 'mr'
+                                  ? 'उदा. ऑक्टोबर २०२६ (मागील ३ आठवडे)'
+                                  : language === 'hi'
+                                    ? 'उदा. अक्टूबर २०२६ (पिछले ३ सप्ताह)'
+                                    : 'e.g. Past 3 weeks'
+                              }
                             />
                           </div>
                         </div>
 
                         <div>
                           <label className="block text-xs font-semibold text-[#334155] mb-1.5">
-                            {language === 'mr' ? 'तक्रारीचे सविस्तर वर्णन *' : 'Detailed Description *'}
+                            {language === 'mr'
+                              ? 'तक्रारीचे सविस्तर वर्णन *'
+                              : language === 'hi'
+                                ? 'शिकायत का विस्तृत विवरण *'
+                                : 'Detailed Description *'}
                           </label>
                           <textarea
                             rows={5}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder={language === 'mr' ? 'कृपया समस्येचे नेमके स्वरूप, त्यामुळे उत्पादनावर किंवा व्यवसायावर होणारा परिणाम आणि अपेक्षित उपाययोजना सविस्तर लिहा...' : 'Describe the exact issue, impact on manufacturing operations, and requested resolution...'}
+                            placeholder={
+                              language === 'mr'
+                                ? 'कृपया समस्येचे नेमके स्वरूप, त्यामुळे उत्पादनावर किंवा व्यवसायावर होणारा परिणाम आणि अपेक्षित उपाययोजना सविस्तर लिहा...'
+                                : language === 'hi'
+                                  ? 'कृपया समस्या का सटीक स्वरूप, उत्पादन या व्यवसाय पर प्रभाव और अपेक्षित समाधान विस्तार से लिखें...'
+                                  : 'Describe the exact issue, impact on manufacturing operations, and requested resolution...'
+                            }
                             className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#E35914] focus:border-transparent transition resize-y font-devanagari"
                           />
                           {errors.description && (
@@ -607,19 +804,31 @@ export const GrievancePage: React.FC = () => {
                     <div className="space-y-5 animate-in fade-in">
                       <div className="border-b border-[#E2E8F0] pb-3">
                         <h2 className="text-lg font-bold text-[#111827]">
-                          {language === 'mr' ? 'विभाग क: पूरक कागदपत्रे व छायाचित्रे' : 'Section C: Supporting Documents'}
+                          {language === 'mr'
+                            ? 'विभाग क: पूरक कागदपत्रे व छायाचित्रे'
+                            : language === 'hi'
+                              ? 'अनुभाग C: सहायक दस्तावेज एवं तस्वीरें'
+                              : 'Section C: Supporting Documents'}
                         </h2>
                         <p className="text-xs text-[#64748B]">
                           {language === 'mr'
                             ? 'समस्येचे छायाचित्र, पत्रव्यवहार, वीज बिल, अर्ज पावती किंवा संघटनेचा ठराव जोडा (ऐच्छिक, कमाल १० एमबी).'
-                            : 'Attach site photographs, correspondence, electricity bills, or receipts (Max 10MB per file).'}
+                            : language === 'hi'
+                              ? 'समस्या की तस्वीर, पत्राचार, बिजली बिल, आवेदन रसीद या संगठन का प्रस्ताव जोड़ें (वैकल्पिक, अधिकतम 10 MB)।'
+                              : 'Attach site photographs, correspondence, electricity bills, or receipts (Max 10MB per file).'}
                         </p>
                       </div>
 
                       <div className="border-2 border-dashed border-[#CBD5E1] hover:border-[#E35914] rounded-2xl p-6 sm:p-8 text-center transition bg-[#F8FAFC]">
                         <UploadCloud className="w-10 h-10 text-[#64748B] mx-auto mb-2" />
                         <label className="cursor-pointer text-xs font-bold text-[#E35914] hover:text-[#C2410C] bg-[#FFF7ED] px-4 py-2 rounded-xl inline-block border border-[#FFEDD5]">
-                          <span>{language === 'mr' ? 'कागदपत्रे निवडा (Choose Files)' : 'Choose Files'}</span>
+                          <span>
+                            {language === 'mr'
+                              ? 'कागदपत्रे निवडा (Choose Files)'
+                              : language === 'hi'
+                                ? 'दस्तावेज चुनें (Choose Files)'
+                                : 'Choose Files'}
+                          </span>
                           <input
                             type="file"
                             multiple
@@ -629,7 +838,11 @@ export const GrievancePage: React.FC = () => {
                           />
                         </label>
                         <p className="text-[11px] text-[#64748B] mt-2">
-                          {language === 'mr' ? 'अनुमत फॉरमॅट: PDF, Word, JPG, PNG, ZIP (कमाल १० MB)' : 'Supported: PDF, Word, JPG, PNG, ZIP (Max 10MB)'}
+                          {language === 'mr'
+                            ? 'अनुमत फॉरमॅट: PDF, Word, JPG, PNG, ZIP (कमाल १० MB)'
+                            : language === 'hi'
+                              ? 'अनुमत प्रारूप: PDF, Word, JPG, PNG, ZIP (अधिकतम 10 MB)'
+                              : 'Supported: PDF, Word, JPG, PNG, ZIP (Max 10MB)'}
                         </p>
                       </div>
 
@@ -643,7 +856,11 @@ export const GrievancePage: React.FC = () => {
                       {files.length > 0 && (
                         <div className="space-y-2">
                           <h4 className="text-xs font-bold text-[#111827]">
-                            {language === 'mr' ? 'संलग्न कागदपत्रे:' : 'Attached Files:'}
+                            {language === 'mr'
+                              ? 'संलग्न कागदपत्रे:'
+                              : language === 'hi'
+                                ? 'संलग्न दस्तावेज:'
+                                : 'Attached Files:'}
                           </h4>
                           <div className="divide-y divide-[#E2E8F0] border border-[#E2E8F0] rounded-xl bg-white overflow-hidden">
                             {files.map((f, idx) => (
@@ -659,7 +876,13 @@ export const GrievancePage: React.FC = () => {
                                   type="button"
                                   onClick={() => removeFile(idx)}
                                   className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
-                                  title="काढून टाका"
+                                  title={
+                                    language === 'mr'
+                                      ? 'काढून टाका'
+                                      : language === 'hi'
+                                        ? 'हटाएं'
+                                        : 'Remove'
+                                  }
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -676,12 +899,18 @@ export const GrievancePage: React.FC = () => {
                     <div className="space-y-5 animate-in fade-in">
                       <div className="border-b border-[#E2E8F0] pb-3">
                         <h2 className="text-lg font-bold text-[#111827]">
-                          {language === 'mr' ? 'विभाग ड: तक्रारीचे पुनरावलोकन व घोषणापत्र' : 'Section D: Review & Official Declaration'}
+                          {language === 'mr'
+                            ? 'विभाग ड: तपशील तपासा व घोषणापत्र'
+                            : language === 'hi'
+                              ? 'अनुभाग D: विवरण जांचें और घोषणा'
+                              : 'Section D: Review and declaration'}
                         </h2>
                         <p className="text-xs text-[#64748B]">
                           {language === 'mr'
                             ? 'अर्ज सादर करण्यापूर्वी सर्व माहितीची पडताळणी करा.'
-                            : 'Verify your submitted details before final submission.'}
+                            : language === 'hi'
+                              ? 'आवेदन जमा करने से पहले सभी विवरणों की समीक्षा करें।'
+                              : 'Verify your submitted details before final submission.'}
                         </p>
                       </div>
 
@@ -689,44 +918,70 @@ export const GrievancePage: React.FC = () => {
                       <div className="bg-[#F8FAFC] rounded-2xl p-4 sm:p-5 border border-[#E2E8F0] space-y-3 text-xs">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-[#E2E8F0]">
                           <div>
-                            <span className="text-[#64748B] block">उद्योग नाव:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'उद्योग नाव:' : language === 'hi' ? 'उद्योग का नाम:' : 'Enterprise Name:'}
+                            </span>
                             <span className="font-bold text-[#111827]">{businessName}</span>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">संपर्क व्यक्ती:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'संपर्क व्यक्ती:' : language === 'hi' ? 'संपर्क व्यक्ति:' : 'Contact Person:'}
+                            </span>
                             <span className="font-bold text-[#111827]">{contactPerson} ({designation})</span>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">संपर्क माहिती:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'संपर्क माहिती:' : language === 'hi' ? 'संपर्क विवरण:' : 'Contact Info:'}
+                            </span>
                             <span className="font-medium text-[#111827]">{email} | {phone}</span>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">जिल्हा व स्थान:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'जिल्हा व स्थान:' : language === 'hi' ? 'ज़िला एवं स्थान:' : 'District & Location:'}
+                            </span>
                             <span className="font-medium text-[#111827]">{district} - {locationArea}</span>
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <div>
-                            <span className="text-[#64748B] block">तक्रारीचा वर्ग:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'तक्रारीचा वर्ग:' : language === 'hi' ? 'शिकायत श्रेणी:' : 'Grievance Category:'}
+                            </span>
                             <span className="font-semibold text-[#E35914]">
                               {categoriesList.find((c) => c.key === category)?.label}
                             </span>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">मुख्य विषय:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'मुख्य विषय:' : language === 'hi' ? 'मुख्य विषय:' : 'Subject:'}
+                            </span>
                             <span className="font-bold text-[#111827]">{subject}</span>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">सविस्तर वर्णन:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'सविस्तर वर्णन:' : language === 'hi' ? 'विस्तृत विवरण:' : 'Description:'}
+                            </span>
                             <p className="text-[#334155] whitespace-pre-wrap bg-white p-3 rounded-lg border border-[#E2E8F0] mt-1">
                               {description}
                             </p>
                           </div>
                           <div>
-                            <span className="text-[#64748B] block">संलग्न फाईल्स:</span>
+                            <span className="text-[#64748B] block">
+                              {language === 'mr' ? 'संलग्न फाईल्स:' : language === 'hi' ? 'संलग्न फ़ाइलें:' : 'Attached Files:'}
+                            </span>
                             <span className="font-medium text-[#111827]">
-                              {files.length > 0 ? `${files.length} फाईल्स संलग्न` : 'कोणतीही फाईल जोडलेली नाही'}
+                              {files.length > 0
+                                ? language === 'mr'
+                                  ? `${files.length} फाईल्स संलग्न`
+                                  : language === 'hi'
+                                    ? `${files.length} फ़ाइलें संलग्न`
+                                    : `${files.length} files attached`
+                                : language === 'mr'
+                                  ? 'कोणतीही फाईल जोडलेली नाही'
+                                  : language === 'hi'
+                                    ? 'कोई फ़ाइल संलग्न नहीं'
+                                    : 'No files attached'}
                             </span>
                           </div>
                         </div>
@@ -743,8 +998,10 @@ export const GrievancePage: React.FC = () => {
                           />
                           <span className="leading-relaxed">
                             {language === 'mr'
-                              ? 'मी याद्वारे घोषित करतो की वर दिलेली सर्व माहिती सत्य व वस्तुस्थितीवर आधारित आहे. उद्योग सेतू समन्वय कक्षास माझ्या तक्रारीच्या निवारणासाठी संबंधित प्रशासकीय विभागांशी थेट संवाद साधण्याचे अधिकार मी देत आहे.'
-                              : 'I declare that the information provided above is true and accurate. I authorize the BJP Udyog Setu cell to coordinate with relevant administrative departments for issue resolution.'}
+                              ? 'ही माहिती माझ्या माहितीनुसार खरी आहे. उद्योग सेतू हे स्वतंत्र मार्गदर्शन व्यासपीठ असल्याची आणि वैधानिक तक्रारींसाठी अधिकृत शासकीय पोर्टल वापरण्याची मला जाणीव आहे.'
+                              : language === 'hi'
+                                ? 'मेरी जानकारी के अनुसार यह विवरण सही है। मुझे ज्ञात है कि उद्योग सेतु स्वतंत्र मार्गदर्शन मंच है और वैधानिक शिकायतों के लिए आधिकारिक सरकारी पोर्टल का उपयोग करना है।'
+                                : 'I confirm this information is accurate. I understand that Udyog Setu is an independent guidance initiative and statutory complaints must be filed on official government portals.'}
                           </span>
                         </label>
                         {errors.consent && (
@@ -764,7 +1021,11 @@ export const GrievancePage: React.FC = () => {
                         onClick={handlePrev}
                         icon={<ArrowLeft className="w-4 h-4" />}
                       >
-                        {language === 'mr' ? 'मागील पायरी' : 'Previous Step'}
+                        {language === 'mr'
+                          ? 'मागील पायरी'
+                          : language === 'hi'
+                            ? 'पिछला चरण'
+                            : 'Previous Step'}
                       </Button>
                     ) : (
                       <div />
@@ -779,7 +1040,11 @@ export const GrievancePage: React.FC = () => {
                         icon={<ArrowRight className="w-4 h-4" />}
                         iconPosition="right"
                       >
-                        {language === 'mr' ? 'पुढील पायरी' : 'Next Step'}
+                        {language === 'mr'
+                          ? 'पुढील पायरी'
+                          : language === 'hi'
+                            ? 'अगला चरण'
+                            : 'Next Step'}
                       </Button>
                     ) : (
                       <Button
@@ -792,8 +1057,10 @@ export const GrievancePage: React.FC = () => {
                         {isSubmitting
                           ? t.common.loading
                           : language === 'mr'
-                          ? 'तक्रार दाखल करा (Submit Grievance)'
-                          : 'Submit Grievance'}
+                            ? 'तक्रार दाखल करा (Submit Grievance)'
+                            : language === 'hi'
+                              ? 'शिकायत सबमिट करें (Submit Grievance)'
+                              : 'Submit Grievance'}
                       </Button>
                     )}
                   </div>
@@ -802,102 +1069,30 @@ export const GrievancePage: React.FC = () => {
             )}
           </div>
 
-          {/* Sidebar Column (4 Cols) - Enhances the page & eliminates empty space! */}
+          {/* Sidebar Column */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Resolution Process Card */}
             <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-4">
               <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
                 <ShieldCheck className="w-5 h-5 text-[#136938]" />
                 <h3 className="font-bold text-sm text-[#111827]">
-                  {language === 'mr' ? 'तक्रार निवारण कार्यपद्धती' : 'Resolution Procedure'}
+                  {language === 'mr' ? 'नोंद व अधिकृत माहिती स्रोत' : language === 'hi' ? 'प्रविष्टि व आधिकारिक सूचना स्रोत' : 'Record & official information sources'}
                 </h3>
               </div>
 
-              <div className="space-y-3.5 text-xs">
-                <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#FFF7ED] text-[#E35914] font-bold flex items-center justify-center shrink-0 font-label">
-                    १
-                  </span>
-                  <div>
-                    <span className="font-semibold text-[#111827] block">ऑनलाईन नोंदणी व संदर्भ क्रमांक</span>
-                    <span className="text-[#64748B]">फॉर्म सबमिट करताच युनिक ट्रॅकिंग आयडी त्वरित प्राप्त होतो.</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#FFF7ED] text-[#E35914] font-bold flex items-center justify-center shrink-0 font-label">
-                    २
-                  </span>
-                  <div>
-                    <span className="font-semibold text-[#111827] block">जिल्हा समन्वयक नियुक्ती</span>
-                    <span className="text-[#64748B]">२४ ते ४८ तासांत संबंधित MIDC विभागाचा नोडल अधिकारी नियुक्त होतो.</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#FFF7ED] text-[#E35914] font-bold flex items-center justify-center shrink-0 font-label">
-                    ३
-                  </span>
-                  <div>
-                    <span className="font-semibold text-[#111827] block">विभागीय पाठपुरावा व पाहणी</span>
-                    <span className="text-[#64748B]">महावितरण, एमपीसीबी किंवा एमआयडीसी अधिकाऱ्यांशी प्रत्यक्ष समन्वय.</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#F0FDF4] text-[#136938] font-bold flex items-center justify-center shrink-0 font-label">
-                    ४
-                  </span>
-                  <div>
-                    <span className="font-semibold text-[#136938] block">अडचण निवारण व अहवाल</span>
-                    <span className="text-[#64748B]">समस्या सुटल्यानंतर तक्रारदारास थेट स्थिती अद्यतन पाठवले जाते.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Regional Liaison Officers Directory */}
-            <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-4">
-              <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
-                <Building className="w-5 h-5 text-[#E35914]" />
-                <h3 className="font-bold text-sm text-[#111827]">
-                  {language === 'mr' ? 'विभागीय समन्वय संपर्क' : 'Regional Liaison Desks'}
-                </h3>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                  <div className="font-bold text-[#111827]">पुणे व पश्चिम महाराष्ट्र कक्ष</div>
-                  <div className="text-[#64748B] text-[11px] mt-0.5">भोसरी, चाकण, रांजणगाव, तळोजा MIDC क्लस्टर</div>
-                  <div className="text-[#E35914] font-medium mt-1">pune@udyogsetu.in | ०२०-२५५०१०००</div>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                  <div className="font-bold text-[#111827]">छत्रपती संभाजीनगर व मराठवाडा</div>
-                  <div className="text-[#64748B] text-[11px] mt-0.5">वाळूज, शेंद्रा-बिडकीन, जालना औद्योगिक पट्टा</div>
-                  <div className="text-[#E35914] font-medium mt-1">marathwada@udyogsetu.in</div>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                  <div className="font-bold text-[#111827]">नागपूर व विदर्भ कक्ष</div>
-                  <div className="text-[#64748B] text-[11px] mt-0.5">बुटीबोरी, मिहान, अमरावती टेक्सटाईल झोन</div>
-                  <div className="text-[#E35914] font-medium mt-1">vidarbha@udyogsetu.in</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Helpline Box */}
-            <div className="bg-linear-to-br from-[#111827] to-[#1E293B] text-white rounded-2xl p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-[#F59E0B]">
-                <Phone className="w-5 h-5" />
-                <span className="font-bold text-sm">उद्योग हेल्पलाइन</span>
-              </div>
-              <div className="text-2xl font-extrabold text-white font-label">
-                १८००-२३३-०५५५
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                सोमवार ते शनिवार, सकाळी ९:३० ते सायंकाळी ६:००. सर्व औद्योगिक अडचणींचे मार्गदर्शन उपलब्ध.
+              <p className="text-sm leading-relaxed text-[#64748B]">
+                {language === 'mr'
+                  ? 'फॉर्म, संलग्नकांची नावे आणि संदर्भ क्रमांक उद्योग सेतू मंचावर सुरक्षित राहतात. वैधानिक तक्रार निवारण किंवा शासकीय हस्तक्षेपासाठी अधिकृत सरकारी पोर्टलचा वापर करावा.'
+                  : language === 'hi'
+                    ? 'फ़ॉर्म, संलग्नकों के नाम और संदर्भ संख्या उद्योग सेतु मंच पर सुरक्षित रहते हैं। वैधानिक शिकायत निवारण के लिए आधिकारिक सरकारी पोर्टल का उपयोग करें।'
+                    : 'The form details and reference number stay safely preserved. For statutory government grievance redressal, please access the official government portals.'}
               </p>
+              <div className="space-y-2 border-t border-[#E2E8F0] pt-4">
+                {[OFFICIAL_SOURCES.midc, OFFICIAL_SOURCES.faq, OFFICIAL_SOURCES.rts].map((source) => (
+                  <a key={source.href} href={source.href} target="_blank" rel="noreferrer" className="flex items-center justify-between gap-3 rounded-lg border border-[#E2E8F0] px-3 py-2 text-xs font-medium text-[#136938] hover:bg-[#F0FDF4]">
+                    <span>{source.label[language]}</span><ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>

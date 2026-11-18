@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
+import { PageHeader } from '../components/ui/PageHeader';
 import {
   Calendar,
   MapPin,
@@ -17,6 +18,7 @@ import {
   Info,
 } from 'lucide-react';
 import type { EventItem } from '../types';
+import { triggerConfetti } from '../components/animations/Confetti';
 
 export const UdyogSamvaadPage: React.FC = () => {
   const { language, t } = useLanguage();
@@ -53,8 +55,11 @@ export const UdyogSamvaadPage: React.FC = () => {
   const filteredEvents = samvaadEvents.filter((item) => {
     const matchesSearch =
       item.titleMr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.titleHi.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.locationMr.toLowerCase().includes(searchQuery.toLowerCase());
+      item.locationMr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.locationHi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.locationEn.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDistrict = districtFilter === 'all' || item.district === districtFilter;
     return matchesSearch && matchesDistrict;
   });
@@ -101,6 +106,7 @@ export const UdyogSamvaadPage: React.FC = () => {
 
       setIsSubmitting(false);
       setSubmittedRef(regRecord.referenceId);
+      triggerConfetti();
     }, 700);
   };
 
@@ -117,24 +123,18 @@ export const UdyogSamvaadPage: React.FC = () => {
         <Breadcrumbs items={[{ label: t.nav.samvaad }]} />
 
         {/* Header Hero Section */}
-        <div className="bg-white rounded-2xl p-6 sm:p-10 border border-[#E2E8F0] shadow-xs">
-          <div className="max-w-4xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF7ED] border border-[#FFEDD5] text-xs font-semibold text-[#E35914] font-label">
-              <MessageSquareShare className="w-3.5 h-3.5" />
-              <span>{language === 'mr' ? 'थेट उद्योग संवाद' : language === 'hi' ? 'प्रत्यक्ष उद्योग संवाद' : 'DIRECT DIALOGUE'}</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#111827] tracking-tight">
-              {language === 'mr' ? 'उद्योग संवाद मंच' : language === 'hi' ? 'उद्योग संवाद मंच' : 'Udyog Samvaad Forum'}
-            </h1>
-            <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-              {language === 'mr'
-                ? 'महाराष्ट्रातील उद्योजक, औद्योगिक क्लस्टर्स आणि राज्य धोरणकर्त्यांमध्ये थेट संवाद घडवून आणण्यासाठी आयोजित बैठका. आपल्या भागातील उद्योगांचे प्रश्न, वीज दर, पायाभूत सुविधा आणि विस्तार योजनांवर थेट चर्चा.'
-                : language === 'hi'
-                ? 'महाराष्ट्र के उद्यमियों, क्लस्टरों और नीति-निर्माताओं के बीच सीधा संवाद। औद्योगिक समस्याओं, बिजली दरों और बुनियादी ढांचे पर प्रत्यक्ष विमर्श।'
-                : "Structured interactive dialogue connecting regional entrepreneurs, cluster leads, and policymakers to resolve operational bottlenecks and accelerate Maharashtra's industrial trajectory."}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          category={language === 'mr' ? 'उद्योग संवाद सत्रे' : language === 'hi' ? 'उद्योग संवाद सत्र' : 'Udyog Samvaad Sessions'}
+          categoryIcon={<MessageSquareShare className="h-3.5 w-3.5" />}
+          title={language === 'mr' ? 'उद्योग संवाद — परिसंवाद व चर्चासत्रे' : language === 'hi' ? 'उद्योग संवाद — परिसंवाद एवं चर्चा सत्र' : 'Udyog Samvaad — Industry Dialogue'}
+          description={
+            language === 'mr'
+              ? 'महाराष्ट्रातील औद्योगिक विकास, धोरणात्मक आव्हाने आणि उद्योग-शासकीय संवादासाठी आयोजित चर्चासत्रांची माहिती मिळवा आणि सहभागासाठी नोंदणी करा.'
+              : language === 'hi'
+                ? 'महाराष्ट्र के औद्योगिक विकास, नीतिगत चुनौतियों और उद्योग-सरकार संवाद के लिए आयोजित सत्रों की जानकारी पाएं और सहभागिता दर्ज करें।'
+                : 'Explore industry dialogue sessions on Maharashtra’s industrial growth, policy frameworks and entrepreneurship, and register your participation.'
+          }
+        />
 
         {/* Filter and Search Bar */}
         <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
@@ -144,7 +144,7 @@ export const UdyogSamvaadPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === 'en' ? 'Search event or location...' : 'संवाद बैठक किंवा ठिकाण शोधा...'}
+              placeholder={language === 'mr' ? 'संवाद बैठक किंवा ठिकाण शोधा...' : language === 'hi' ? 'संवाद बैठक या स्थान खोजें...' : 'Search event or location...'}
               className="w-full text-xs pl-9 pr-3 py-2.5 rounded-lg border border-[#CBD5E1] focus:outline-none focus:border-[#E35914] focus:ring-1 focus:ring-[#E35914] bg-white font-devanagari"
             />
           </div>
@@ -175,7 +175,7 @@ export const UdyogSamvaadPage: React.FC = () => {
               {language === 'mr' ? 'नियोजित संवाद कार्यक्रम' : language === 'hi' ? 'नियोजित संवाद कार्यक्रम' : 'Upcoming Dialogue Sessions'}
             </h2>
             <span className="text-xs text-[#64748B]">
-              {filteredEvents.length} {language === 'mr' ? 'कार्यक्रम उपलब्ध' : 'sessions listed'}
+              {filteredEvents.length} {language === 'mr' ? 'कार्यक्रम उपलब्ध' : language === 'hi' ? 'सत्र उपलब्ध' : 'sessions listed'}
             </span>
           </div>
 
@@ -183,10 +183,10 @@ export const UdyogSamvaadPage: React.FC = () => {
             <div className="bg-white rounded-xl p-12 text-center border border-[#E2E8F0] space-y-3">
               <Info className="w-10 h-10 text-[#94A3B8] mx-auto" />
               <h3 className="font-bold text-base text-[#111827]">
-                {language === 'mr' ? 'कोणताही संवाद कार्यक्रम सापडला नाही' : 'No dialogues found'}
+                {language === 'mr' ? 'कोणताही संवाद कार्यक्रम सापडला नाही' : language === 'hi' ? 'कोई संवाद कार्यक्रम नहीं मिला' : 'No dialogues found'}
               </h3>
               <p className="text-xs text-[#64748B]">
-                {language === 'mr' ? 'कृपया शोध निकष बदला किंवा नंतर पुन्हा तपासा.' : 'Please clear your filters.'}
+                {language === 'mr' ? 'कृपया शोध निकष बदला किंवा नंतर पुन्हा तपासा.' : language === 'hi' ? 'कृपया खोज मापदंड बदलें या बाद में पुनः प्रयास करें।' : 'Please clear your filters.'}
               </p>
               <Button variant="outlined" size="sm" onClick={() => { setSearchQuery(''); setDistrictFilter('all'); }}>
                 {t.common.all}
@@ -198,6 +198,7 @@ export const UdyogSamvaadPage: React.FC = () => {
                 const title = language === 'mr' ? event.titleMr : language === 'hi' ? event.titleHi : event.titleEn;
                 const location = language === 'mr' ? event.locationMr : language === 'hi' ? event.locationHi : event.locationEn;
                 const desc = language === 'mr' ? event.descriptionMr : language === 'hi' ? event.descriptionHi : event.descriptionEn;
+                const category = language === 'mr' ? event.categoryMr : language === 'hi' ? (event.categoryHi || event.categoryMr) : event.categoryEn;
 
                 return (
                   <div
@@ -206,9 +207,9 @@ export const UdyogSamvaadPage: React.FC = () => {
                   >
                     <div className="space-y-4">
                       <div className="flex items-center justify-between gap-2">
-                        <Badge variant="primary">{event.categoryMr}</Badge>
+                        <Badge variant="primary">{category}</Badge>
                         <span className="text-[11px] font-label text-[#136938] bg-[#F0FDF4] border border-[#DCFCE7] px-2 py-0.5 rounded uppercase font-medium">
-                          {language === 'mr' ? 'अधिकृत सत्र' : 'Active Session'}
+                          {language === 'mr' ? 'नियोजित सत्र' : language === 'hi' ? 'नियोजित सत्र' : 'Scheduled session'}
                         </span>
                       </div>
 
@@ -242,6 +243,8 @@ export const UdyogSamvaadPage: React.FC = () => {
                             <span>
                               {language === 'mr'
                                 ? `क्षमता: ${event.capacity} उद्योजक (${event.registeredCount || 0} नोंदणीकृत)`
+                                : language === 'hi'
+                                ? `क्षमता: ${event.capacity} उद्यमी (${event.registeredCount || 0} पंजीकृत)`
                                 : `Capacity: ${event.capacity} (${event.registeredCount || 0} registered)`}
                             </span>
                           </div>
@@ -252,7 +255,7 @@ export const UdyogSamvaadPage: React.FC = () => {
                       {event.agenda && event.agenda.length > 0 && (
                         <div className="space-y-1.5 pt-1">
                           <h4 className="text-[11px] font-bold text-[#111827] uppercase tracking-wider font-label">
-                            {language === 'mr' ? 'ठळक विषयपत्रिका:' : 'Session Agenda:'}
+                            {language === 'mr' ? 'ठळक विषयपत्रिका:' : language === 'hi' ? 'प्रमुख कार्यसूची:' : 'Session Agenda:'}
                           </h4>
                           <ul className="text-xs text-[#64748B] space-y-1 pl-4 list-disc">
                             {event.agenda.slice(0, 3).map((ag, idx) => (
@@ -265,14 +268,14 @@ export const UdyogSamvaadPage: React.FC = () => {
 
                     <div className="pt-6 mt-6 border-t border-[#E2E8F0] flex items-center justify-between gap-3">
                       <span className="text-[11px] text-[#64748B]">
-                        {language === 'mr' ? 'मोफत सहभाग • पूर्वनोंदणी आवश्यक' : 'Free Entry • RSVP Required'}
+                        {language === 'mr' ? 'मोफत सहभाग • पूर्वनोंदणी आवश्यक' : language === 'hi' ? 'निःशुल्क सहभागिता • पूर्व-पंजीकरण आवश्यक' : 'Free Entry • RSVP Required'}
                       </span>
                       <Button
                         variant="primary"
                         size="sm"
                         onClick={() => handleOpenRegister(event)}
                       >
-                        {language === 'mr' ? 'संवादात सहभागी व्हा' : 'Register for Session'}
+                        {language === 'mr' ? 'संवादात सहभागी व्हा' : language === 'hi' ? 'संवाद में भाग लें' : 'Register for Session'}
                       </Button>
                     </div>
                   </div>
@@ -301,12 +304,12 @@ export const UdyogSamvaadPage: React.FC = () => {
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111827]">
-                  {language === 'mr' ? 'संवाद नोंदणी यशस्वी!' : 'Registration Confirmed!'}
+                  {language === 'mr' ? 'संवाद नोंदणी यशस्वीरीत्या जतन झाली' : language === 'hi' ? 'संवाद पंजीकरण सफलतापूर्वक सहेजा गया' : 'Dialogue Registration Saved'}
                 </h3>
                 <p className="text-xs text-[#64748B]">
                   {language === 'mr'
-                    ? 'आपली उद्योग संवाद सहभाग नोंदणी अधिकृतरीत्या प्राप्त झाली आहे.'
-                    : 'Your RSVP for the dialogue session has been officially registered.'}
+                    ? 'ही नोंद उद्योग सेतू मंचावर जतन झाली असून समन्वय प्रक्रियेसाठी वापरली जाईल.'
+                    : language === 'hi' ? 'यह प्रविष्टि उद्योग सेतु मंच पर सहेज ली गई है और समन्वय के लिए उपयोग की जाएगी।' : 'This entry is securely saved for session coordination on Udyog Setu.'}
                 </p>
 
                 <div className="bg-[#FFF7ED] p-4 rounded-xl border border-[#FFEDD5] inline-block my-2">
@@ -320,8 +323,8 @@ export const UdyogSamvaadPage: React.FC = () => {
 
                 <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-3 rounded-lg border border-[#DCFCE7]">
                   {language === 'mr'
-                    ? 'नोंदणी क्रमांक व सविस्तर बैठक कार्यक्रम आपल्या संपर्क क्रमांकावर एसएमएसद्वारे पाठवला जाईल.'
-                    : 'Registration confirmation and venue entry pass details will be communicated via SMS.'}
+                    ? 'नोंदणीची पुष्टी व अंतिम कार्यक्रम स्थळाची माहिती नोंदवलेल्या संपर्कावर पाठवली जाईल.'
+                    : language === 'hi' ? 'पंजीकरण पुष्टि और अंतिम कार्यक्रम स्थल की जानकारी संपर्क विवरण पर भेजी जाएगी।' : 'Registration confirmation and final venue details will be communicated via your registered contact.'}
                 </div>
 
                 <div className="pt-2">
@@ -334,32 +337,32 @@ export const UdyogSamvaadPage: React.FC = () => {
               <div>
                 <div className="mb-4">
                   <span className="text-xs font-bold text-[#E35914] bg-[#FFF7ED] px-2.5 py-1 rounded">
-                    {selectedEvent.categoryMr}
+                    {language === 'mr' ? selectedEvent.categoryMr : language === 'hi' ? (selectedEvent.categoryHi || selectedEvent.categoryMr) : selectedEvent.categoryEn}
                   </span>
                   <h3 className="text-xl font-bold text-[#111827] mt-2">
-                    {language === 'mr' ? selectedEvent.titleMr : selectedEvent.titleEn}
+                    {language === 'mr' ? selectedEvent.titleMr : language === 'hi' ? selectedEvent.titleHi : selectedEvent.titleEn}
                   </h3>
                   <p className="text-xs text-[#64748B] mt-1">
-                    {selectedEvent.date} • {selectedEvent.locationMr}
+                    {selectedEvent.date} • {language === 'mr' ? selectedEvent.locationMr : language === 'hi' ? selectedEvent.locationHi : selectedEvent.locationEn}
                   </p>
                 </div>
 
                 <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                   <Input
-                    label={language === 'mr' ? 'उद्योजक / प्रतिनिधीचे पूर्ण नाव' : 'Participant Full Name'}
+                    label={language === 'mr' ? 'उद्योजक / प्रतिनिधीचे पूर्ण नाव' : language === 'hi' ? 'उद्यमी / प्रतिनिधि का पूरा नाम' : 'Participant Full Name'}
                     value={formData.participantName}
                     onChange={(e) => setFormData({ ...formData, participantName: e.target.value })}
                     error={formErrors.participantName}
-                    placeholder="उदा. सुहास बाळकृष्ण पाटील"
+                    placeholder={language === 'mr' ? 'उदा. सुहास बाळकृष्ण पाटील' : language === 'hi' ? 'उदा. सुहास बालकृष्ण पाटिल' : 'e.g. Suhas Balkrishna Patil'}
                     required
                   />
 
                   <Input
-                    label={language === 'mr' ? 'कंपनी / संस्थेचे नाव' : 'Enterprise / Association Name'}
+                    label={language === 'mr' ? 'कंपनी / संस्थेचे नाव' : language === 'hi' ? 'कंपनी / संस्था का नाम' : 'Enterprise / Association Name'}
                     value={formData.businessName}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                     error={formErrors.businessName}
-                    placeholder="उदा. पाटील ऑटोमेशन प्रायव्हेट लिमिटेड"
+                    placeholder={language === 'mr' ? 'उदा. पाटील ऑटोमेशन प्रायव्हेट लिमिटेड' : language === 'hi' ? 'उदा. पाटिल ऑटोमेशन प्राइवेट लिमिटेड' : 'e.g. Patil Automation Pvt. Ltd.'}
                     required
                   />
 
@@ -369,7 +372,7 @@ export const UdyogSamvaadPage: React.FC = () => {
                       value={formData.designation}
                       onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                       error={formErrors.designation}
-                      placeholder="उदा. संचालक / पार्टनर"
+                      placeholder={language === 'mr' ? 'उदा. संचालक / पार्टनर' : language === 'hi' ? 'उदा. निदेशक / साझेदार' : 'e.g. Director / Partner'}
                       required
                     />
 
@@ -378,7 +381,7 @@ export const UdyogSamvaadPage: React.FC = () => {
                       value={formData.sector}
                       onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
                       error={formErrors.sector}
-                      placeholder="उदा. ऑटोमोटिव्ह / इंजिनिअरिंग"
+                      placeholder={language === 'mr' ? 'उदा. ऑटोमोटिव्ह / इंजिनिअरिंग' : language === 'hi' ? 'उदा. ऑटोमोटिव / इंजीनियरिंग' : 'e.g. Automotive / Engineering'}
                       required
                     />
                   </div>
@@ -406,19 +409,19 @@ export const UdyogSamvaadPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-[#475569] mb-1.5 font-label">
-                      {language === 'mr' ? 'संवादात मांडायचा प्रमुख प्रश्न किंवा मुद्दा (पर्यायी)' : 'Key Issue or Topic for Dialogue (Optional)'}
+                      {language === 'mr' ? 'संवादात मांडायचा प्रमुख प्रश्न किंवा मुद्दा (पर्यायी)' : language === 'hi' ? 'संवाद में उठाए जाने वाला मुख्य प्रश्न या मुद्दा (वैकल्पिक)' : 'Key Issue or Topic for Dialogue (Optional)'}
                     </label>
                     <textarea
                       rows={2}
                       value={formData.customQuestions}
                       onChange={(e) => setFormData({ ...formData, customQuestions: e.target.value })}
-                      placeholder={language === 'mr' ? 'आपल्या क्लस्टर किंवा उद्योगाशी संबंधित प्रश्न थोडक्यात नमूद करा...' : 'Brief notes...'}
+                      placeholder={language === 'mr' ? 'आपल्या क्लस्टर किंवा उद्योगाशी संबंधित प्रश्न थोडक्यात नमूद करा...' : language === 'hi' ? 'अपने क्लस्टर या उद्योग से संबंधित प्रश्न संक्षेप में बताएं...' : 'Brief notes regarding issues or topics...'}
                       className="w-full text-xs p-3 rounded-lg border border-[#CBD5E1] focus:outline-none focus:border-[#E35914] bg-white font-devanagari"
                     />
                   </div>
 
                   <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-2.5 rounded border border-[#DCFCE7]">
-                    {language === 'mr' ? 'नोंदणीनंतर प्रवेशिका व बैठक तपशील आपल्या ईमेल व मोबाईलवर पाठवले जातील.' : 'Entry pass and schedule will be delivered to your registered contact.'}
+                    {language === 'mr' ? 'नोंदणी मोफत असून अंतिम कार्यक्रम प्रवेशिका समन्वय संपर्कावर उपलब्ध होईल.' : language === 'hi' ? 'पंजीकरण निःशुल्क है और अंतिम कार्यक्रम पास संपर्क विवरण पर उपलब्ध होगा।' : 'Registration is complimentary; official entry pass will be coordinated via contact details.'}
                   </div>
 
                   <div className="pt-2 flex items-center justify-end gap-3">
@@ -426,7 +429,7 @@ export const UdyogSamvaadPage: React.FC = () => {
                       {t.common.cancel}
                     </Button>
                     <Button variant="primary" size="md" type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? t.common.loading : language === 'mr' ? 'नोंदणी पूर्ण करा' : 'Confirm Registration'}
+                      {isSubmitting ? t.common.loading : language === 'mr' ? 'नोंदणी पूर्ण करा' : language === 'hi' ? 'पंजीकरण पूर्ण करें' : 'Confirm Registration'}
                     </Button>
                   </div>
                 </form>

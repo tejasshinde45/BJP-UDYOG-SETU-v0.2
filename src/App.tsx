@@ -18,6 +18,11 @@ import { NitiManthanPage } from './pages/NitiManthanPage';
 import { EventsPage } from './pages/EventsPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { UdyogSaarthiPage } from './pages/UdyogSaarthiPage';
+import { SubsidyMentorPage } from './pages/SubsidyMentorPage';
+import { DprFormsPage } from './pages/DprFormsPage';
+import { UdyogSetuB2BPage } from './pages/UdyogSetuB2BPage';
+import { DigitalCardPage } from './pages/DigitalCardPage';
 
 // Scroll to top helper on route change
 function ScrollToTop() {
@@ -43,6 +48,11 @@ function App() {
             <main className="flex-1 flex flex-col">
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/udyog-saarthi" element={<UdyogSaarthiPage />} />
+                <Route path="/subsidy-mentor" element={<SubsidyMentorPage />} />
+                <Route path="/dpr-forms" element={<DprFormsPage />} />
+                <Route path="/udyog-setu-b2b" element={<UdyogSetuB2BPage />} />
+                <Route path="/digital-card" element={<DigitalCardPage />} />
                 <Route path="/udyog-samvaad" element={<UdyogSamvaadPage />} />
                 <Route path="/udyog-darshan" element={<UdyogDarshanPage />} />
                 <Route path="/grievance" element={<GrievancePage />} />

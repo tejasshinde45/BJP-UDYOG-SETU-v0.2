@@ -1,169 +1,65 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../hooks/useLanguage';
-import { Building2, Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import { Building2, ExternalLink } from 'lucide-react';
+import { OFFICIAL_SOURCES } from '../../data/industryContent';
 
 export const Footer: React.FC = () => {
   const { language, t } = useLanguage();
+  const label = language === 'mr' ? 'प्रमुख मॉड्यूल' : language === 'hi' ? 'मुख्य मॉड्यूल' : 'Primary modules';
+  const features = language === 'mr' ? 'उद्योग संवाद व सेवा' : language === 'hi' ? 'उद्योग संवाद और सेवाएं' : 'Industry dialogue and services';
+  const resources = language === 'mr' ? 'अधिकृत माहिती स्रोत' : language === 'hi' ? 'आधिकारिक सूचना स्रोत' : 'Official information sources';
+  const disclaimer = language === 'mr'
+    ? 'उद्योग सेतू हे स्वतंत्र माहिती व मार्गदर्शनाचे व्यासपीठ आहे; हे शासकीय किंवा MIDC पोर्टल नाही.'
+    : language === 'hi'
+      ? 'उद्योग सेतु स्वतंत्र सूचना और मार्गदर्शन का मंच है; यह आधिकारिक सरकारी या MIDC पोर्टल नहीं है।'
+      : 'Udyog Setu is an independent industrial information and guidance platform; not an official government or MIDC portal.';
+
+  const primaryLinks = [
+    ['/udyog-saarthi', t.nav.udyogSaarthi],
+    ['/subsidy-mentor', t.nav.subsidyMentor],
+    ['/dpr-forms', t.nav.dprForms],
+    ['/udyog-setu-b2b', t.nav.b2b],
+    ['/digital-card', t.nav.digitalCard],
+  ];
+  const supportingLinks = [
+    ['/udyog-samvaad', t.nav.samvaad],
+    ['/udyog-darshan', t.nav.darshan],
+    ['/grievance', t.nav.grievance],
+    ['/track-complaint', t.nav.trackComplaint],
+    ['/meeting-request', t.nav.meetingRequest],
+    ['/association-registration', t.nav.associationReg],
+    ['/niti-manthan', t.nav.nitiManthan],
+    ['/events', t.nav.events],
+    ['/admin', t.nav.admin],
+  ];
 
   return (
-    <footer className="bg-[#F8FAFC] border-t border-[#E2E8F0] mt-auto font-devanagari text-sm text-[#475569]">
-      {/* Upper footer grid */}
-      <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Col 1: Identity & Mission */}
-          <div className="md:col-span-1 space-y-4">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#E35914] flex items-center justify-center text-white shadow-xs">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <span className="font-bold text-lg text-[#111827]">
-                {t.nav.brand}
-              </span>
-            </Link>
-            <p className="text-xs text-[#64748B] leading-relaxed">
-              {language === 'mr'
-                ? 'महाराष्ट्राच्या $1 Trillion अर्थव्यवस्थेच्या संकल्पपूर्तीसाठी उद्योग, उद्योजक आणि धोरणकर्त्यांमधील सहकार्याचा सेतू.'
-                : language === 'hi'
-                ? 'महाराष्ट्र के $1 Trillion अर्थव्यवस्था के संकल्प हेतु उद्योग, उद्यमियों और नीति निर्माताओं के मध्य सहयोग का सेतु।'
-                : "A collaborative bridge connecting industry leaders, MSMEs, and policymakers towards Maharashtra's $1 Trillion Economy Mission."}
-            </p>
-            <div className="pt-1">
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#136938] hover:text-[#0E532C] bg-[#F0FDF4] px-2.5 py-1 rounded-md border border-[#DCFCE7] transition"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{t.nav.admin}</span>
-              </Link>
-            </div>
+    <footer className="mt-auto border-t border-[#E2E8F0] bg-[#F8FAFC] font-devanagari text-sm text-[#475569]">
+      <div className="mx-auto w-full max-w-[1560px] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          <div className="space-y-4">
+            <Link to="/" className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E35914] text-white shadow-xs"><Building2 className="h-5 w-5" /></div><span className="text-lg font-bold text-[#111827]">{t.nav.brand}</span></Link>
+            <p className="text-xs leading-relaxed text-[#64748B]">{disclaimer}</p>
           </div>
-
-          {/* Col 2: Core Services */}
           <div>
-            <h4 className="font-semibold text-[#111827] text-xs uppercase tracking-wider mb-4 font-label">
-              {language === 'mr' ? 'प्रमुख सेवा' : language === 'hi' ? 'प्रमुख सेवाएं' : 'Key Services'}
-            </h4>
-            <ul className="space-y-2 text-xs text-[#64748B]">
-              <li>
-                <Link to="/udyog-samvaad" className="hover:text-[#E35914] transition">
-                  {t.nav.samvaad}
-                </Link>
-              </li>
-              <li>
-                <Link to="/udyog-darshan" className="hover:text-[#E35914] transition">
-                  {t.nav.darshan}
-                </Link>
-              </li>
-              <li>
-                <Link to="/grievance" className="hover:text-[#E35914] transition">
-                  {t.nav.grievance}
-                </Link>
-              </li>
-              <li>
-                <Link to="/track-complaint" className="hover:text-[#E35914] transition">
-                  {t.nav.trackComplaint}
-                </Link>
-              </li>
-              <li>
-                <Link to="/meeting-request" className="hover:text-[#E35914] transition">
-                  {t.nav.meetingRequest}
-                </Link>
-              </li>
-            </ul>
+            <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#111827] font-label">{label}</h4>
+            <ul className="space-y-2 text-xs text-[#64748B]">{primaryLinks.map(([to, title]) => <li key={to}><Link to={to} className="transition hover:text-[#E35914]">{title}</Link></li>)}</ul>
           </div>
-
-          {/* Col 3: Policy & Ecosystem */}
           <div>
-            <h4 className="font-semibold text-[#111827] text-xs uppercase tracking-wider mb-4 font-label">
-              {language === 'mr' ? 'धोरण व उपक्रम' : language === 'hi' ? 'नीति एवं पहल' : 'Policy & Initiatives'}
-            </h4>
-            <ul className="space-y-2 text-xs text-[#64748B]">
-              <li>
-                <Link to="/association-registration" className="hover:text-[#E35914] transition">
-                  {t.nav.associationReg}
-                </Link>
-              </li>
-              <li>
-                <Link to="/niti-manthan" className="hover:text-[#E35914] transition">
-                  {t.nav.nitiManthan}
-                </Link>
-              </li>
-              <li>
-                <Link to="/events" className="hover:text-[#E35914] transition">
-                  {t.nav.events}
-                </Link>
-              </li>
-              <li>
-                <Link to="/#ecosystem" className="hover:text-[#E35914] transition">
-                  {language === 'mr' ? '$1 Trillion अर्थव्यवस्था रोडमॅप' : '$1 Trillion Roadmap'}
-                </Link>
-              </li>
-            </ul>
+            <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#111827] font-label">{features}</h4>
+            <ul className="space-y-2 text-xs text-[#64748B]">{supportingLinks.map(([to, title]) => <li key={to}><Link to={to} className="transition hover:text-[#E35914]">{title}</Link></li>)}</ul>
           </div>
-
-          {/* Col 4: Institutional Desk Info */}
           <div>
-            <h4 className="font-semibold text-[#111827] text-xs uppercase tracking-wider mb-4 font-label">
-              {language === 'mr' ? 'संपर्क व समन्वय केंद्र' : language === 'hi' ? 'संपर्क व समन्वय केंद्र' : 'Coordination Desk'}
-            </h4>
-            <div className="space-y-3 text-xs text-[#64748B]">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-[#E35914] shrink-0 mt-0.5" />
-                <span>
-                  {language === 'mr'
-                    ? 'उद्योग सहकार्य कक्ष, नरिमन पॉईंट, मुंबई, महाराष्ट्र'
-                    : language === 'hi'
-                    ? 'उद्योग सहयोग प्रकोष्ठ, नरीमन पॉइंट, मुंबई, महाराष्ट्र'
-                    : 'Industry Coordination Cell, Nariman Point, Mumbai, Maharashtra'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-[#136938] shrink-0" />
-                <span>०२२-२२००४४५५ / १८००-२३३-०५५५</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-[#F59E0B] shrink-0" />
-                <span>udyogsetu@bjpmaharashtra.org</span>
-              </div>
-            </div>
+            <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#111827] font-label">{resources}</h4>
+            <ul className="space-y-3 text-xs text-[#64748B]">{[OFFICIAL_SOURCES.investorHub, OFFICIAL_SOURCES.guide, OFFICIAL_SOURCES.policies, OFFICIAL_SOURCES.infrastructure, OFFICIAL_SOURCES.maitri].map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer" className="inline-flex items-start gap-1.5 transition hover:text-[#136938]"><span>{source.label[language]}</span><ExternalLink className="mt-0.5 h-3 w-3 shrink-0" /></a></li>)}</ul>
           </div>
         </div>
       </div>
-
-      {/* Institutional Legal Copyright */}
-      <div className="border-t border-[#E2E8F0] bg-white py-6 px-4 sm:px-6 lg:px-8 text-xs text-[#64748B]">
-        <div className="w-full max-w-[1560px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="space-y-1 text-center md:text-left">
-            <p className="font-medium text-[#111827]">
-              {language === 'mr'
-                ? '© २०२६ भाजप उद्योग सेतू, महाराष्ट्र राज्य. सर्व हक्क राखीव.'
-                : language === 'hi'
-                ? '© २०२६ भाजपा उद्योग सेतु, महाराष्ट्र राज्य। सर्वाधिकार सुरक्षित।'
-                : '© 2026 BJP Udyog Setu, Maharashtra State. All rights reserved.'}
-            </p>
-            <p className="text-[11px] text-[#94A3B8]">
-              {language === 'mr'
-                ? 'उद्योग, व्यापार आणि धोरण समन्वयासाठी महाराष्ट्र राज्यस्तरीय अधिकृत व्यासपीठ.'
-                : language === 'hi'
-                ? 'उद्योग, व्यापार और नीति समन्वय हेतु महाराष्ट्र राज्यस्तरीय आधिकारिक मंच।'
-                : "Official platform for Maharashtra's industrial engagement and $1 Trillion economy mission."}
-            </p>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-label">
-            <span className="text-[#136938] font-medium flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[#136938]"></span>
-              {language === 'en' ? 'Official Platform' : 'अधिकृत व्यासपीठ'}
-            </span>
-            <span>•</span>
-            <span className="text-[#E35914] font-medium">
-              {language === 'mr'
-                ? 'महाराष्ट्र $1T दृष्टिकोन'
-                : language === 'hi'
-                  ? 'महाराष्ट्र $1T दृष्टि'
-                  : 'Maharashtra $1T Vision'}
-            </span>
-          </div>
+      <div className="border-t border-[#E2E8F0] bg-white px-4 py-5 text-xs text-[#64748B] sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1560px] flex-col items-center justify-between gap-2 sm:flex-row">
+          <span>© 2026 {t.nav.brand}</span>
+          <span className="font-medium text-[#136938]">{language === 'mr' ? 'माहिती व मार्गदर्शन उपक्रम' : language === 'hi' ? 'जानकारी और मार्गदर्शन पहल' : 'Information and guidance initiative'}</span>
         </div>
       </div>
     </footer>

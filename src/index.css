@@ -301,3 +301,82 @@ body:has(.modal-scroll-lock) {
     transition: none;
   }
 }
+
+/* High-End Award-Winning Keyframe Animations */
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(15px, -15px) scale(1.08);
+    opacity: 0.95;
+  }
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(227, 89, 20, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(227, 89, 20, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(227, 89, 20, 0);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-aurora {
+  animation: aurora-flow 12s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.shimmer-card {
+  background: linear-gradient(90deg, transparent, rgba(227, 89, 20, 0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 3s infinite linear;
+}
+
+/* Professional Enterprise Stage Transitions */
+@keyframes stage-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stage-fade {
+  animation: stage-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

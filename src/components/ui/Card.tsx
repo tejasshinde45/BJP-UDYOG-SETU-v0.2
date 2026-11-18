@@ -6,6 +6,7 @@ interface CardProps {
   hoverEffect?: boolean;
   accent?: 'none' | 'primary' | 'secondary' | 'tertiary';
   onClick?: () => void;
+  id?: string;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -14,12 +15,13 @@ export const Card: React.FC<CardProps> = ({
   hoverEffect = false,
   accent = 'none',
   onClick,
+  id,
 }) => {
   const accentBorder = {
     none: 'border-[#E2E8F0]',
-    primary: 'border-t-4 border-t-[#E35914] border-x-[#E2E8F0] border-b-[#E2E8F0]',
-    secondary: 'border-t-4 border-t-[#136938] border-x-[#E2E8F0] border-b-[#E2E8F0]',
-    tertiary: 'border-t-4 border-t-[#F59E0B] border-x-[#E2E8F0] border-b-[#E2E8F0]',
+    primary: 'border-t-2 border-t-[#E35914] border-x-[#E2E8F0] border-b-[#E2E8F0]',
+    secondary: 'border-t-2 border-t-[#136938] border-x-[#E2E8F0] border-b-[#E2E8F0]',
+    tertiary: 'border-t-2 border-t-[#F59E0B] border-x-[#E2E8F0] border-b-[#E2E8F0]',
   }[accent];
 
   const hoverStyle = hoverEffect
@@ -28,6 +30,7 @@ export const Card: React.FC<CardProps> = ({
 
   return (
     <div
+      id={id}
       onClick={onClick}
       className={`bg-white rounded-xl border ${accentBorder} ${hoverStyle} p-6 ${className}`}
     >

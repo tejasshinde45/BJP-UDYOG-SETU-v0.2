@@ -17,11 +17,11 @@ import {
 import { DemoDataContext } from './demoDataContextDef';
 
 const STORAGE_KEYS = {
-  GRIEVANCES: 'udyog_setu_grievances_v4',
-  MEETINGS: 'udyog_setu_meetings_v4',
-  ASSOCIATIONS: 'udyog_setu_associations_v4',
-  EVENTS: 'udyog_setu_events_v4',
-  REGISTRATIONS: 'udyog_setu_registrations_v4',
+  GRIEVANCES: 'udyog_setu_grievances_v5',
+  MEETINGS: 'udyog_setu_meetings_v5',
+  ASSOCIATIONS: 'udyog_setu_associations_v5',
+  EVENTS: 'udyog_setu_events_v5',
+  REGISTRATIONS: 'udyog_setu_registrations_v5',
 };
 
 // Helper to generate unique ID with prefix
@@ -130,7 +130,7 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       'id' | 'referenceId' | 'submittedAt' | 'timeline' | 'followUps' | 'status' | 'isDemo'
     >
   ): GrievanceRecord => {
-    const refId = generateRefId('MH-US-2025', grievances);
+    const refId = generateRefId('DEMO-GRV', grievances);
     const now = new Date().toISOString();
     const newRecord: GrievanceRecord = {
       ...data,
@@ -142,14 +142,14 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       timeline: [
         {
           id: `tl-${Date.now()}-1`,
-          title: 'तक्रार दाखल झाली (Submitted)',
-          description: `संदर्भ क्रमांक ${refId} सह उद्योग सेतूवर तक्रार यशस्वीरीत्या नोंदवली गेली.`,
+          title: 'नोंद सुरक्षित जतन झाली',
+          description: `समन्वय संदर्भ ${refId}. प्राथमिक नोंद मंचावर जतन झाली.`,
           timestamp: now,
           status: 'Submitted',
-          actor: 'सिस्टम नोंद',
+          actor: 'माहिती व समन्वय मंच',
         },
       ],
-      isDemo: false,
+      isDemo: true,
     };
 
     setGrievances((prev) => [newRecord, ...prev]);
@@ -243,7 +243,7 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const addMeetingRequest = (
     data: Omit<MeetingRequestRecord, 'id' | 'referenceId' | 'submittedAt' | 'status' | 'isDemo'>
   ): MeetingRequestRecord => {
-    const refId = generateRefId('MH-LMR-2025', meetingRequests);
+    const refId = generateRefId('DEMO-MTG', meetingRequests);
     const now = new Date().toISOString();
     const newRecord: MeetingRequestRecord = {
       ...data,
@@ -251,7 +251,7 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       referenceId: refId,
       submittedAt: now,
       status: 'Pending Review',
-      isDemo: false,
+      isDemo: true,
     };
 
     setMeetingRequests((prev) => [newRecord, ...prev]);
@@ -267,7 +267,7 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const addAssociation = (
     data: Omit<AssociationRecord, 'id' | 'referenceId' | 'submittedAt' | 'status' | 'isDemo'>
   ): AssociationRecord => {
-    const refId = generateRefId('MH-ASC-2025', associations);
+    const refId = generateRefId('DEMO-ASC', associations);
     const now = new Date().toISOString();
     const newRecord: AssociationRecord = {
       ...data,
@@ -275,7 +275,7 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       referenceId: refId,
       submittedAt: now,
       status: 'Pending Verification',
-      isDemo: false,
+      isDemo: true,
     };
 
     setAssociations((prev) => [newRecord, ...prev]);
@@ -291,14 +291,14 @@ export const DemoDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const addEventRegistration = (
     data: Omit<EventRegistrationRecord, 'id' | 'referenceId' | 'submittedAt' | 'isDemo'>
   ): EventRegistrationRecord => {
-    const refId = generateRefId('MH-REG-2025', eventRegistrations);
+    const refId = generateRefId('DEMO-REG', eventRegistrations);
     const now = new Date().toISOString();
     const newRecord: EventRegistrationRecord = {
       ...data,
       id: `reg-${Date.now()}`,
       referenceId: refId,
       submittedAt: now,
-      isDemo: false,
+      isDemo: true,
     };
 
     setEventRegistrations((prev) => [newRecord, ...prev]);

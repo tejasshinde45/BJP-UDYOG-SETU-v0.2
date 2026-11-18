@@ -9,7 +9,6 @@ import {
   FileCheck2,
   ShieldAlert,
   ChevronDown,
-  Phone,
   ClipboardList,
   UserPlus,
 } from 'lucide-react';
@@ -22,14 +21,20 @@ export const Header: React.FC = () => {
 
   // Primary navigation links visible in top bar
   const mainNav = [
-    { to: '/udyog-samvaad', label: t.nav.samvaad },
-    { to: '/udyog-darshan', label: t.nav.darshan },
-    { to: '/grievance', label: t.nav.grievance },
-    { to: '/meeting-request', label: t.nav.meetingRequest },
+    { to: '/udyog-saarthi', label: t.nav.udyogSaarthi },
+    { to: '/subsidy-mentor', label: t.nav.subsidyMentor },
+    { to: '/dpr-forms', label: t.nav.dprForms },
+    { to: '/udyog-setu-b2b', label: t.nav.b2b },
+    { to: '/digital-card', label: t.nav.digitalCard },
   ];
 
   // Secondary navigation links in "More" or mobile menu
   const secondaryNav = [
+    { to: '/udyog-samvaad', label: t.nav.samvaad },
+    { to: '/udyog-darshan', label: t.nav.darshan },
+    { to: '/grievance', label: t.nav.grievance },
+    { to: '/track-complaint', label: t.nav.trackComplaint },
+    { to: '/meeting-request', label: t.nav.meetingRequest },
     { to: '/association-registration', label: t.nav.associationReg },
     { to: '/niti-manthan', label: t.nav.nitiManthan },
     { to: '/events', label: t.nav.events },
@@ -41,7 +46,7 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-xs">
       {/* Official Saffron-White-Green Tricolor Accent Stripe */}
-      <div className="h-1 w-full bg-linear-to-r from-[#E35914] via-[#F59E0B] to-[#136938]" />
+      <div className="h-[2.5px] w-full bg-gradient-to-r from-[#E35914] via-[#F59E0B] to-[#136938]" />
 
       {/* Top institutional strip */}
       <div className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-xs py-1.5 px-4 sm:px-6 lg:px-8 text-[#64748B] font-label">
@@ -54,12 +59,6 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Toll-free Helpline */}
-            <div className="hidden lg:flex items-center gap-1.5 text-xs text-[#334155] font-devanagari">
-              <Phone className="w-3 h-3 text-[#136938]" />
-              <span className="font-medium">हेल्पलाइन: १८००-२३३-०५५५</span>
-            </div>
-
             {/* Admin link badge */}
             <Link
               to="/admin"

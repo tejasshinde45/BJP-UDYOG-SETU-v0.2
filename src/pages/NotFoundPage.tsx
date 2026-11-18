@@ -15,13 +15,17 @@ export const NotFoundPage: React.FC = () => {
         </div>
 
         <div className="space-y-1">
-          <span className="text-4xl font-extrabold text-[#E35914] font-label">४०४ / 404</span>
+          <span className="text-4xl font-extrabold text-[#E35914] font-label">
+            {language === 'en' ? '404' : '४०४'}
+          </span>
           <h1 className="text-xl font-bold text-[#111827]">
-            {language === 'mr' ? 'पृष्ठ सापडले नाही' : 'Page Not Found'}
+            {language === 'mr' ? 'पृष्ठ सापडले नाही' : language === 'hi' ? 'पृष्ठ नहीं मिला' : 'Page Not Found'}
           </h1>
           <p className="text-xs text-[#64748B] leading-relaxed">
             {language === 'mr'
               ? 'आपण शोधत असलेले पृष्ठ उपलब्ध नाही किंवा त्याचा पत्ता बदलला गेला आहे.'
+              : language === 'hi'
+              ? 'आप जिस पृष्ठ को खोज रहे हैं वह उपलब्ध नहीं है या उसका पता बदल दिया गया है।'
               : 'The requested route does not exist or has been relocated.'}
           </p>
         </div>

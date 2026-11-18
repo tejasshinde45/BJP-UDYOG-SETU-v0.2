@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
+import { PageHeader } from '../components/ui/PageHeader';
 import {
   Calendar,
   MapPin,
@@ -15,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import type { EventItem } from '../types';
+import { triggerConfetti } from '../components/animations/Confetti';
 
 export const EventsPage: React.FC = () => {
   const { language, t } = useLanguage();
@@ -54,8 +56,11 @@ export const EventsPage: React.FC = () => {
     const matchesCat = selectedCategory === 'all' || event.category === selectedCategory;
     const matchesSearch =
       event.titleMr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.titleHi.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.locationMr.toLowerCase().includes(searchQuery.toLowerCase());
+      event.locationMr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.locationHi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.locationEn.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   });
 
@@ -101,6 +106,7 @@ export const EventsPage: React.FC = () => {
 
       setIsSubmitting(false);
       setSubmittedRef(reg.referenceId);
+      triggerConfetti();
     }, 700);
   };
 
@@ -123,22 +129,18 @@ export const EventsPage: React.FC = () => {
         <Breadcrumbs items={[{ label: t.nav.events }]} />
 
         {/* Header Hero Section */}
-        <div className="bg-white rounded-2xl p-6 sm:p-10 border border-[#E2E8F0] shadow-xs">
-          <div className="max-w-4xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF7ED] border border-[#FFEDD5] text-xs font-semibold text-[#E35914] font-label">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{language === 'mr' ? 'उद्योग मेळावे व उपक्रम' : 'CONCLAVES & EVENTS HUB'}</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#111827] tracking-tight">
-              {language === 'mr' ? 'कार्यक्रम व उपक्रम केंद्र' : 'Industrial Events & Programs'}
-            </h1>
-            <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-              {language === 'mr'
-                ? 'उद्योग संवाद, उद्योग दर्शन, नीती मंथन आणि राज्यस्तरीय औद्योगिक शिखर परिषदांचे एकत्रित वेळापत्रक. सर्व कार्यक्रमांची माहिती, कार्यक्रमपत्रिका व उपस्थिती नोंदणी.'
-                : 'Central calendar for all BJP Udyog Setu dialogues, field study tours, policy roundtables, and regional industrial summits.'}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          category={language === 'mr' ? 'औद्योगिक उपक्रम व परिषदा' : language === 'hi' ? 'औद्योगिक पहल एवं परिषदें' : 'Industrial Summits & Events'}
+          categoryIcon={<Calendar className="h-3.5 w-3.5" />}
+          title={language === 'mr' ? 'कार्यक्रम व उपक्रम' : language === 'hi' ? 'कार्यक्रम एवं पहल' : 'Events & Initiatives'}
+          description={
+            language === 'mr'
+              ? 'महाराष्ट्रातील प्रमुख औद्योगिक संमेलने, व्यवसाय प्रदर्शने आणि क्षेत्रीय चर्चासत्रांचे वेळापत्रक व माहिती.'
+              : language === 'hi'
+                ? 'महाराष्ट्र के प्रमुख औद्योगिक सम्मेलनों, व्यावसायिक प्रदर्शनियों और क्षेत्रीय चर्चासत्रों की समय-सारिणी एवं जानकारी।'
+                : 'Calendar and registration for upcoming industrial summits, regional vendor meets and technology expos across Maharashtra.'
+          }
+        />
 
         {/* Tab & Filter Controls */}
         <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-2xs space-y-4">
@@ -154,7 +156,7 @@ export const EventsPage: React.FC = () => {
                     : 'text-[#64748B] hover:text-[#111827]'
                 }`}
               >
-                {language === 'mr' ? 'आगामी कार्यक्रम' : 'Upcoming Events'} ({upcomingEvents.length})
+                {language === 'mr' ? 'आगामी कार्यक्रम' : language === 'hi' ? 'आगामी कार्यक्रम' : 'Upcoming events'} ({upcomingEvents.length})
               </button>
               <button
                 type="button"
@@ -165,7 +167,7 @@ export const EventsPage: React.FC = () => {
                     : 'text-[#64748B] hover:text-[#111827]'
                 }`}
               >
-                {language === 'mr' ? 'मागील यशस्वी उपक्रम' : 'Past Conclaves'} ({pastEvents.length})
+                {language === 'mr' ? 'मागील कार्यक्रम' : language === 'hi' ? 'पिछले कार्यक्रम' : 'Past events'} ({pastEvents.length})
               </button>
             </div>
 
@@ -176,7 +178,7 @@ export const EventsPage: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={language === 'mr' ? 'कार्यक्रम शोधा...' : 'Search events...'}
+                placeholder={language === 'mr' ? 'कार्यक्रम शोधा...' : language === 'hi' ? 'कार्यक्रम खोजें...' : 'Search events...'}
                 className="w-full text-xs pl-9 pr-3 py-2 rounded-lg border border-[#CBD5E1] focus:outline-none focus:border-[#E35914] bg-white font-devanagari"
               />
             </div>
@@ -184,13 +186,15 @@ export const EventsPage: React.FC = () => {
 
           {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0] text-xs">
-            <span className="text-xs text-[#64748B] font-medium py-1">प्रवर्ग:</span>
+            <span className="text-xs text-[#64748B] font-medium py-1">
+              {language === 'mr' ? 'प्रवर्ग:' : language === 'hi' ? 'श्रेणी:' : 'Category:'}
+            </span>
             {[
               { id: 'all', label: t.common.all },
-              { id: 'samvaad', label: 'उद्योग संवाद (Samvaad)' },
-              { id: 'darshan', label: 'उद्योग दर्शन (Darshan)' },
-              { id: 'niti', label: 'नीती मंथन (Niti Manthan)' },
-              { id: 'summit', label: 'शिखर परिषद (Summits)' },
+              { id: 'samvaad', label: language === 'mr' ? 'उद्योग संवाद' : language === 'hi' ? 'उद्योग संवाद' : 'Udyog Samvaad' },
+              { id: 'darshan', label: language === 'mr' ? 'उद्योग दर्शन' : language === 'hi' ? 'उद्योग दर्शन' : 'Udyog Darshan' },
+              { id: 'niti', label: language === 'mr' ? 'नीती मंथन' : language === 'hi' ? 'नीति मंथन' : 'Niti Manthan' },
+              { id: 'summit', label: language === 'mr' ? 'शिखर परिषद' : language === 'hi' ? 'शिखर सम्मेलन' : 'Industry Summits' },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -215,13 +219,17 @@ export const EventsPage: React.FC = () => {
               {activeTab === 'upcoming'
                 ? language === 'mr'
                   ? 'आगामी कार्यक्रम यादी'
+                  : language === 'hi'
+                  ? 'आगामी कार्यक्रम सूची'
                   : 'Upcoming Event Schedule'
                 : language === 'mr'
                 ? 'मागील उपक्रम अहवाल व फलनिष्पत्ती'
+                : language === 'hi'
+                ? 'पिछले उपक्रम विवरण एवं परिणाम'
                 : 'Past Activities & Outcomes'}
             </h2>
             <span className="text-xs text-[#64748B]">
-              {filteredEvents.length} {language === 'mr' ? 'कार्यक्रम आढळले' : 'events shown'}
+              {filteredEvents.length} {language === 'mr' ? 'कार्यक्रम आढळले' : language === 'hi' ? 'कार्यक्रम मिले' : 'events shown'}
             </span>
           </div>
 
@@ -229,10 +237,10 @@ export const EventsPage: React.FC = () => {
             <div className="bg-white rounded-xl p-12 text-center border border-[#E2E8F0] space-y-2">
               <Calendar className="w-10 h-10 text-[#94A3B8] mx-auto" />
               <h3 className="font-bold text-base text-[#111827]">
-                {language === 'mr' ? 'कोणताही कार्यक्रम आढळला नाही' : 'No events match the filter'}
+                {language === 'mr' ? 'कोणताही कार्यक्रम आढळला नाही' : language === 'hi' ? 'कोई कार्यक्रम नहीं मिला' : 'No events match the filter'}
               </h3>
               <p className="text-xs text-[#64748B]">
-                {language === 'mr' ? 'कृपया शोध किंवा प्रवर्ग निकष बदला.' : 'Try adjusting your filters.'}
+                {language === 'mr' ? 'कृपया शोध किंवा प्रवर्ग निकष बदला.' : language === 'hi' ? 'कृपया खोज या श्रेणी मापदंड बदलें।' : 'Try adjusting your filters.'}
               </p>
             </div>
           ) : (
@@ -255,13 +263,13 @@ export const EventsPage: React.FC = () => {
                       />
                       <div className="absolute top-3 left-3">
                         <span className="text-[11px] font-bold bg-[#E35914] text-white px-2.5 py-1 rounded shadow-xs font-devanagari">
-                          {event.categoryMr}
+                          {language === 'mr' ? event.categoryMr : language === 'hi' ? (event.categoryHi || event.categoryMr) : event.categoryEn}
                         </span>
                       </div>
                       {event.status === 'completed' && (
                         <div className="absolute top-3 right-3">
                           <span className="text-[10px] font-bold bg-[#136938] text-white px-2 py-0.5 rounded font-label uppercase">
-                            Completed
+                            {language === 'mr' ? 'संपन्न' : language === 'hi' ? 'संपन्न' : 'Completed'}
                           </span>
                         </div>
                       )}
@@ -291,6 +299,8 @@ export const EventsPage: React.FC = () => {
                               <span>
                                 {language === 'mr'
                                   ? `क्षमता: ${event.capacity} (${event.registeredCount || 0} नोंदणीकृत)`
+                                  : language === 'hi'
+                                  ? `क्षमता: ${event.capacity} (${event.registeredCount || 0} पंजीकृत)`
                                   : `Capacity: ${event.capacity} (${event.registeredCount || 0} RSVPs)`}
                               </span>
                             </div>
@@ -313,7 +323,7 @@ export const EventsPage: React.FC = () => {
                             size="sm"
                             onClick={() => handleOpenRegister(event)}
                           >
-                            {language === 'mr' ? 'नोंदणी करा' : 'RSVP Now'}
+                            {language === 'mr' ? 'नोंदणी करा' : language === 'hi' ? 'पंजीकरण करें' : 'RSVP Now'}
                           </Button>
                         )}
                       </div>
@@ -339,9 +349,9 @@ export const EventsPage: React.FC = () => {
             </button>
 
             <div className="space-y-4">
-              <Badge variant="primary">{selectedEvent.categoryMr}</Badge>
+              <div className="flex flex-wrap items-center gap-2"><Badge variant="primary">{language === 'mr' ? selectedEvent.categoryMr : language === 'hi' ? selectedEvent.categoryHi : selectedEvent.categoryEn}</Badge></div>
               <h3 className="text-xl sm:text-2xl font-bold text-[#111827]">
-                {language === 'mr' ? selectedEvent.titleMr : selectedEvent.titleEn}
+                {language === 'mr' ? selectedEvent.titleMr : language === 'hi' ? selectedEvent.titleHi : selectedEvent.titleEn}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0]">
@@ -351,23 +361,25 @@ export const EventsPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[#64748B] block">{t.common.location}:</span>
-                  <span className="font-bold text-[#111827]">{selectedEvent.locationMr}</span>
+                  <span className="font-bold text-[#111827]">
+                    {language === 'mr' ? selectedEvent.locationMr : language === 'hi' ? selectedEvent.locationHi : selectedEvent.locationEn}
+                  </span>
                 </div>
               </div>
 
               <div>
                 <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider mb-1 font-label">
-                  {language === 'mr' ? 'कार्यक्रमाचा तपशील:' : 'Program Description:'}
+                  {language === 'mr' ? 'कार्यक्रमाचा तपशील:' : language === 'hi' ? 'कार्यक्रम विवरण:' : 'Program Description:'}
                 </h4>
                 <p className="text-xs text-[#475569] leading-relaxed">
-                  {selectedEvent.descriptionMr}
+                  {language === 'mr' ? selectedEvent.descriptionMr : language === 'hi' ? selectedEvent.descriptionHi : selectedEvent.descriptionEn}
                 </p>
               </div>
 
               {selectedEvent.agenda && (
                 <div>
                   <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider mb-2 font-label">
-                    {language === 'mr' ? 'वेळापत्रक व सत्रे (Agenda):' : 'Agenda:'}
+                    {language === 'mr' ? 'वेळापत्रक व सत्रे (Agenda):' : language === 'hi' ? 'समय-सारणी एवं सत्र (Agenda):' : 'Agenda:'}
                   </h4>
                   <ul className="space-y-2 text-xs text-[#334155]">
                     {selectedEvent.agenda.map((ag, idx) => (
@@ -381,7 +393,7 @@ export const EventsPage: React.FC = () => {
               )}
 
               <div className="bg-[#F0FDF4] p-3 rounded-xl border border-[#DCFCE7] text-xs text-[#136938]">
-                {language === 'mr' ? 'कार्यक्रमाचे अधिकृत प्रवेश पत्र आणि बैठक तपशील आपल्या नोंदणीकृत ईमेलवर पाठवले जातील.' : 'Official event pass and schedule will be communicated via registered email.'}
+                {language === 'mr' ? 'DEMO — या फॉर्ममधून प्रवेशिका किंवा कार्यक्रम तपशील पाठवले जात नाहीत.' : language === 'hi' ? 'DEMO — इस फॉर्म से प्रवेश पास या कार्यक्रम विवरण नहीं भेजे जाते।' : 'DEMO — this form does not send an entry pass or event details.'}
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#E2E8F0]">
@@ -390,7 +402,7 @@ export const EventsPage: React.FC = () => {
                 </Button>
                 {selectedEvent.status !== 'completed' && (
                   <Button variant="primary" size="md" onClick={() => handleOpenRegister(selectedEvent)}>
-                    {language === 'mr' ? 'नोंदणी अर्ज भरा' : 'Proceed to RSVP'}
+                    {language === 'mr' ? 'नोंदणी अर्ज भरा' : language === 'hi' ? 'पंजीकरण फॉर्म भरें' : 'Proceed to RSVP'}
                   </Button>
                 )}
               </div>
@@ -417,12 +429,12 @@ export const EventsPage: React.FC = () => {
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111827]">
-                  {language === 'mr' ? 'उपक्रम नोंदणी यशस्वी!' : 'Event RSVP Confirmed!'}
+                  {language === 'mr' ? 'उपक्रम नोंदणी यशस्वी!' : language === 'hi' ? 'उपक्रम पंजीकरण सफल!' : 'Event RSVP Confirmed!'}
                 </h3>
                 <p className="text-xs text-[#64748B]">
                   {language === 'mr'
-                    ? 'आपली उपस्थिती नोंदणी अधिकृतरीत्या नोंदवली गेली आहे.'
-                    : 'Your RSVP has been officially registered.'}
+                    ? 'आपली उपस्थिती नोंद उद्योग सेतू मंचावर सुरक्षित जतन झाली आहे.'
+                    : language === 'hi' ? 'आपकी उपस्थिति प्रविष्टि उद्योग सेतु मंच पर सुरक्षित रूप से सहेजी गई है।' : 'Your RSVP has been securely recorded on Udyog Setu.'}
                 </p>
 
                 <div className="bg-[#FFF7ED] p-4 rounded-xl border border-[#FFEDD5] inline-block my-2">
@@ -436,8 +448,8 @@ export const EventsPage: React.FC = () => {
 
                 <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-3 rounded-lg border border-[#DCFCE7]">
                   {language === 'mr'
-                    ? 'कार्यक्रमाचे प्रवेश पत्र व सविस्तर कार्यक्रमपत्रिका आपल्या नोंदणीकृत ईमेलवर पाठवली जाईल.'
-                    : 'Event pass and itinerary will be shared on your registered contacts.'}
+                    ? 'कार्यक्रमाचे प्रवेश पत्र व सविस्तर कार्यक्रमपत्रिका आपल्या नोंदणीकृत संपर्कावर पाठवली जाईल.'
+                    : language === 'hi' ? 'कार्यक्रम पास एवं समय-सारणी आपके पंजीकृत संपर्क पर भेजी जाएगी।' : 'Event pass and final itinerary will be coordinated via your registered contact details.'}
                 </div>
 
                 <div className="pt-2">
@@ -449,31 +461,33 @@ export const EventsPage: React.FC = () => {
             ) : (
               <div>
                 <div className="mb-4">
-                  <Badge variant="primary">{selectedEvent.categoryMr}</Badge>
+                  <Badge variant="primary">
+                    {language === 'mr' ? selectedEvent.categoryMr : language === 'hi' ? (selectedEvent.categoryHi || selectedEvent.categoryMr) : selectedEvent.categoryEn}
+                  </Badge>
                   <h3 className="text-lg font-bold text-[#111827] mt-2">
-                    {selectedEvent.titleMr}
+                    {language === 'mr' ? selectedEvent.titleMr : language === 'hi' ? selectedEvent.titleHi : selectedEvent.titleEn}
                   </h3>
                   <p className="text-xs text-[#64748B] mt-1">
-                    {selectedEvent.date} • {selectedEvent.locationMr}
+                    {selectedEvent.date} • {language === 'mr' ? selectedEvent.locationMr : language === 'hi' ? selectedEvent.locationHi : selectedEvent.locationEn}
                   </p>
                 </div>
 
                 <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                   <Input
-                    label={language === 'mr' ? 'सहभागी प्रतिनिधीचे पूर्ण नाव' : 'Participant Name'}
+                    label={language === 'mr' ? 'सहभागी प्रतिनिधीचे पूर्ण नाव' : language === 'hi' ? 'सहभागी प्रतिनिधि का पूरा नाम' : 'Participant Name'}
                     value={formData.participantName}
                     onChange={(e) => setFormData({ ...formData, participantName: e.target.value })}
                     error={formErrors.participantName}
-                    placeholder="उदा. अमित सुरेश शिंदे"
+                    placeholder={language === 'mr' ? 'उदा. अमित सुरेश शिंदे' : language === 'hi' ? 'उदा. अमित सुरेश शिंदे' : 'e.g. Amit Suresh Shinde'}
                     required
                   />
 
                   <Input
-                    label={language === 'mr' ? 'कंपनी / संस्थेचे नाव' : 'Enterprise / Association Name'}
+                    label={language === 'mr' ? 'कंपनी / संस्थेचे नाव' : language === 'hi' ? 'कंपनी / संस्था का नाम' : 'Enterprise / Association Name'}
                     value={formData.businessName}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                     error={formErrors.businessName}
-                    placeholder="उदा. शिंदे इंजिनिअर्स प्रा. लि."
+                    placeholder={language === 'mr' ? 'उदा. शिंदे इंजिनिअर्स प्रा. लि.' : language === 'hi' ? 'उदा. शिंदे इंजीनियर्स प्रा. लि.' : 'e.g. Shinde Engineers Pvt. Ltd.'}
                     required
                   />
 
@@ -483,7 +497,7 @@ export const EventsPage: React.FC = () => {
                       value={formData.designation}
                       onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                       error={formErrors.designation}
-                      placeholder="उदा. व्यवस्थापक / संचालक"
+                      placeholder={language === 'mr' ? 'उदा. व्यवस्थापक / संचालक' : language === 'hi' ? 'उदा. प्रबंधक / निदेशक' : 'e.g. Manager / Director'}
                       required
                     />
 
@@ -492,7 +506,7 @@ export const EventsPage: React.FC = () => {
                       value={formData.sector}
                       onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
                       error={formErrors.sector}
-                      placeholder="उदा. मशिनिंग / ऑटो"
+                      placeholder={language === 'mr' ? 'उदा. मशिनिंग / ऑटो' : language === 'hi' ? 'उदा. मशीनिंग / ऑटो' : 'e.g. Machining / Auto'}
                       required
                     />
                   </div>
@@ -520,19 +534,19 @@ export const EventsPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-[#475569] mb-1.5 font-label">
-                      {language === 'mr' ? 'काही प्रश्न किंवा टिप्पणी? (पर्यायी)' : 'Questions or Notes (Optional)'}
+                      {language === 'mr' ? 'काही प्रश्न किंवा टिप्पणी? (पर्यायी)' : language === 'hi' ? 'कोई प्रश्न या टिप्पणी? (वैकल्पिक)' : 'Questions or Notes (Optional)'}
                     </label>
                     <textarea
                       rows={2}
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      placeholder="उदा. उपस्थिती नोंदणीबाबत सूचना..."
+                      placeholder={language === 'mr' ? 'उदा. उपस्थिती नोंदणीबाबत सूचना...' : language === 'hi' ? 'उदा. उपस्थिति पंजीकरण संबंधी टिप्पणी...' : 'e.g. Additional requirements or questions...'}
                       className="w-full text-xs p-3 rounded-lg border border-[#CBD5E1] focus:outline-none focus:border-[#E35914] bg-white font-devanagari"
                     />
                   </div>
 
                   <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-2.5 rounded border border-[#DCFCE7]">
-                    {language === 'mr' ? 'कार्यक्रमाचे प्रवेश पत्र व सविस्तर कार्यक्रमपत्रिका आपल्या नोंदणीकृत ईमेलवर पाठवली जाईल.' : 'Event pass and itinerary will be shared on your registered contacts.'}
+                    {language === 'mr' ? 'DEMO — कार्यक्रम पास किंवा कार्यक्रमपत्रिका पाठवली जात नाही.' : language === 'hi' ? 'DEMO — कार्यक्रम पास या कार्यक्रम सूची नहीं भेजी जाती।' : 'DEMO — no event pass or itinerary is sent.'}
                   </div>
 
                   <div className="pt-2 flex items-center justify-end gap-3">
@@ -540,7 +554,7 @@ export const EventsPage: React.FC = () => {
                       {t.common.cancel}
                     </Button>
                     <Button variant="primary" size="md" type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? t.common.loading : language === 'mr' ? 'उपस्थिती नोंदणी करा' : 'Confirm RSVP'}
+                      {isSubmitting ? t.common.loading : language === 'mr' ? 'उपस्थिती नोंदणी करा' : language === 'hi' ? 'उपस्थिति दर्ज करें' : 'Confirm RSVP'}
                     </Button>
                   </div>
                 </form>

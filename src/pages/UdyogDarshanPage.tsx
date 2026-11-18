@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
+import { PageHeader } from '../components/ui/PageHeader';
 import {
   Compass,
   Calendar,
@@ -15,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import type { EventItem } from '../types';
+import { triggerConfetti } from '../components/animations/Confetti';
 
 export const UdyogDarshanPage: React.FC = () => {
   const { language, t } = useLanguage();
@@ -60,7 +62,7 @@ export const UdyogDarshanPage: React.FC = () => {
       errors.phone = t.common.invalidPhone;
     }
     if (!formData.safetyAck) {
-      errors.safetyAck = language === 'mr' ? 'कृपया औद्योगिक सुरक्षा नियमावलीची स्वीकृती द्या.' : 'Please acknowledge safety rules.';
+      errors.safetyAck = language === 'mr' ? 'कृपया औद्योगिक सुरक्षा नियमावलीची स्वीकृती द्या.' : language === 'hi' ? 'कृपया औद्योगिक सुरक्षा नियमों की स्वीकृति दें।' : 'Please acknowledge safety rules.';
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -88,6 +90,7 @@ export const UdyogDarshanPage: React.FC = () => {
 
       setIsSubmitting(false);
       setSubmittedRef(regRecord.referenceId);
+      triggerConfetti();
     }, 700);
   };
 
@@ -110,33 +113,27 @@ export const UdyogDarshanPage: React.FC = () => {
         <Breadcrumbs items={[{ label: t.nav.darshan }]} />
 
         {/* Header Hero Section */}
-        <div className="bg-white rounded-2xl p-6 sm:p-10 border border-[#E2E8F0] shadow-xs">
-          <div className="max-w-4xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F0FDF4] border border-[#DCFCE7] text-xs font-semibold text-[#136938] font-label">
-              <Compass className="w-3.5 h-3.5" />
-              <span>{language === 'mr' ? 'औद्योगिक क्षेत्रीय दौरे' : language === 'hi' ? 'औद्योगिक क्षेत्रीय दौरे' : 'INDUSTRIAL STUDY TOURS'}</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#111827] tracking-tight">
-              {language === 'mr' ? 'उद्योग दर्शन उपक्रम' : language === 'hi' ? 'उद्योग दर्शन पहल' : 'Udyog Darshan Industrial Visits'}
-            </h1>
-            <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-              {language === 'mr'
-                ? 'महाराष्ट्रातील जागतिक दर्जाच्या बंदरे, समृद्धी महामार्ग लॉजिस्टिक हब्स, एरोस्पेस संकुले आणि आधुनिक उत्पादन प्रकल्पांचे थेट क्षेत्रीय अवलोकन. स्थानिक उद्योजकांना आधुनिक तंत्रज्ञान, निर्यात कार्यपद्धती आणि लॉजिस्टिक साखळी प्रत्यक्ष शिकण्याची संधी.'
-                : language === 'hi'
-                ? 'महाराष्ट्र के वैश्विक बंदरगाहों, लॉजिस्टिक हबों और अत्याधुनिक विनिर्माण संयंत्रों का प्रत्यक्ष अध्ययन दौरा। नए उद्यमियों के लिए प्रेरणा व ज्ञान।'
-                : "Experiential study tours allowing Maharashtra's MSMEs and young entrepreneurs to witness benchmark industrial infrastructure, deep-water ports, automation plants, and aerospace logistics first-hand."}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          category={language === 'mr' ? 'औद्योगिक अभ्यास भेटी' : language === 'hi' ? 'औद्योगिक अध्ययन दौरे' : 'Industrial Study Visits'}
+          categoryIcon={<Compass className="h-3.5 w-3.5" />}
+          title={language === 'mr' ? 'उद्योग दर्शन — औद्योगिक क्षेत्र भेटी' : language === 'hi' ? 'उद्योग दर्शन — औद्योगिक अध्ययन दौरे' : 'Udyog Darshan — Industrial Visits'}
+          description={
+            language === 'mr'
+              ? 'महाराष्ट्रातील प्रमुख औद्योगिक वसाहती, उत्पादन क्लस्टर्स आणि पायाभूत सुविधांच्या अभ्यास भेटींचे वेळापत्रक व तपशील.'
+              : language === 'hi'
+                ? 'महाराष्ट्र के प्रमुख औद्योगिक क्षेत्रों, उत्पादन क्लस्टरों और बुनियादी ढांचों के अध्ययन दौरों की समय-सारिणी एवं विवरण।'
+                : 'Schedule and details of industrial study visits to major manufacturing clusters, MIDC estates and infrastructure corridors across Maharashtra.'
+          }
+        />
 
         {/* Visits Grid */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-[#111827]">
-              {language === 'mr' ? 'नियोजित उद्योग दर्शन दौरे' : 'Scheduled Industrial Visits'}
+              {language === 'mr' ? 'नियोजित उद्योग दर्शन दौरे' : language === 'hi' ? 'नियोजित उद्योग दर्शन दौरे' : 'Scheduled Industrial Visits'}
             </h2>
             <span className="text-xs text-[#64748B]">
-              {darshanVisits.length} {language === 'mr' ? 'दौरे उपलब्ध' : 'tours available'}
+              {darshanVisits.length} {language === 'mr' ? 'दौरे उपलब्ध' : language === 'hi' ? 'दौरे उपलब्ध' : 'tours available'}
             </span>
           </div>
 
@@ -145,6 +142,7 @@ export const UdyogDarshanPage: React.FC = () => {
               const title = language === 'mr' ? visit.titleMr : language === 'hi' ? visit.titleHi : visit.titleEn;
               const location = language === 'mr' ? visit.locationMr : language === 'hi' ? visit.locationHi : visit.locationEn;
               const desc = language === 'mr' ? visit.descriptionMr : language === 'hi' ? visit.descriptionHi : visit.descriptionEn;
+              const category = language === 'mr' ? visit.categoryMr : language === 'hi' ? (visit.categoryHi || visit.categoryMr) : visit.categoryEn;
 
               return (
                 <div
@@ -159,7 +157,7 @@ export const UdyogDarshanPage: React.FC = () => {
                     />
                     <div className="absolute top-3 left-3">
                       <Badge variant="secondary">
-                        {visit.categoryMr}
+                        {category}
                       </Badge>
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 text-white">
@@ -195,6 +193,8 @@ export const UdyogDarshanPage: React.FC = () => {
                             <span>
                               {language === 'mr'
                                 ? `क्षमता: ${visit.capacity} प्रतिनिधी (${visit.registeredCount || 0} जागा भरल्या)`
+                                : language === 'hi'
+                                ? `क्षमता: ${visit.capacity} प्रतिनिधि (${visit.registeredCount || 0} सीटें भरी)`
                                 : `Batch: ${visit.capacity} max (${visit.registeredCount || 0} booked)`}
                             </span>
                           </div>
@@ -216,7 +216,7 @@ export const UdyogDarshanPage: React.FC = () => {
                         size="sm"
                         onClick={() => handleOpenRegisterFromDetails(visit)}
                       >
-                        {language === 'mr' ? 'दौऱ्यासाठी नोंदणी करा' : 'Register for Visit'}
+                        {language === 'mr' ? 'दौऱ्यासाठी नोंदणी करा' : language === 'hi' ? 'दौरे के लिए पंजीकरण करें' : 'Register for Visit'}
                       </Button>
                     </div>
                   </div>
@@ -240,9 +240,11 @@ export const UdyogDarshanPage: React.FC = () => {
             </button>
 
             <div className="space-y-4">
-              <Badge variant="secondary">{selectedVisit.categoryMr}</Badge>
+              <Badge variant="secondary">
+                {language === 'mr' ? selectedVisit.categoryMr : language === 'hi' ? (selectedVisit.categoryHi || selectedVisit.categoryMr) : selectedVisit.categoryEn}
+              </Badge>
               <h3 className="text-xl sm:text-2xl font-bold text-[#111827]">
-                {language === 'mr' ? selectedVisit.titleMr : selectedVisit.titleEn}
+                {language === 'mr' ? selectedVisit.titleMr : language === 'hi' ? selectedVisit.titleHi : selectedVisit.titleEn}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0]">
@@ -252,23 +254,25 @@ export const UdyogDarshanPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[#64748B] block">{t.common.location}:</span>
-                  <span className="font-bold text-[#111827]">{selectedVisit.locationMr}</span>
+                  <span className="font-bold text-[#111827]">
+                    {language === 'mr' ? selectedVisit.locationMr : language === 'hi' ? selectedVisit.locationHi : selectedVisit.locationEn}
+                  </span>
                 </div>
               </div>
 
               <div>
                 <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider mb-1 font-label">
-                  {language === 'mr' ? 'दौऱ्याचे स्वरूप व अवलोकन उद्दिष्टे:' : 'Visit Overview & Learning Goals:'}
+                  {language === 'mr' ? 'दौऱ्याचे स्वरूप व अवलोकन उद्दिष्टे:' : language === 'hi' ? 'दौरे का स्वरूप एवं अध्ययन उद्देश्य:' : 'Visit Overview & Learning Goals:'}
                 </h4>
                 <p className="text-xs text-[#475569] leading-relaxed">
-                  {selectedVisit.descriptionMr}
+                  {language === 'mr' ? selectedVisit.descriptionMr : language === 'hi' ? selectedVisit.descriptionHi : selectedVisit.descriptionEn}
                 </p>
               </div>
 
               {selectedVisit.agenda && selectedVisit.agenda.length > 0 && (
                 <div>
                   <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider mb-2 font-label">
-                    {language === 'mr' ? 'दौरा वेळापत्रक (Itinerary):' : 'Itinerary:'}
+                    {language === 'mr' ? 'दौरा वेळापत्रक (Itinerary):' : language === 'hi' ? 'दौरा समय-सारणी (Itinerary):' : 'Itinerary:'}
                   </h4>
                   <ul className="space-y-2 text-xs text-[#334155]">
                     {selectedVisit.agenda.map((ag, idx) => (
@@ -285,11 +289,13 @@ export const UdyogDarshanPage: React.FC = () => {
               <div className="bg-[#FFFBEB] p-3.5 rounded-xl border border-[#FEF3C7] space-y-1.5 text-xs text-[#92400E]">
                 <div className="flex items-center gap-2 font-bold font-label">
                   <Shield className="w-4 h-4 text-[#F59E0B]" />
-                  <span>{language === 'mr' ? 'औद्योगिक सुरक्षा नियमावली:' : 'Safety Regulations:'}</span>
+                  <span>{language === 'mr' ? 'औद्योगिक सुरक्षा नियमावली:' : language === 'hi' ? 'औद्योगिक सुरक्षा नियमावली:' : 'Safety Regulations:'}</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
                   {language === 'mr'
                     ? 'सर्व सहभागी उद्योजकांनी सेफ्टी शूज घालणे बंधनकारक आहे. बंदरातील संवेदनशील भागात फोटोग्राफी व विनापरवाना हालचालीस सक्त मनाई आहे.'
+                    : language === 'hi'
+                    ? 'सभी सहभागी उद्यमियों के लिए सुरक्षा जूते (Safety Shoes) पहनना अनिवार्य है। संवेदनशील क्षेत्रों में फोटोग्राफी पूर्णतः प्रतिबंधित है।'
                     : 'Personal Protective Equipment (PPE) is mandatory in active port/industrial operational zones. Photography subject to prior clearances.'}
                 </p>
               </div>
@@ -299,7 +305,7 @@ export const UdyogDarshanPage: React.FC = () => {
                   {t.common.close}
                 </Button>
                 <Button variant="green" size="md" onClick={() => handleOpenRegisterFromDetails(selectedVisit)}>
-                  {language === 'mr' ? 'नोंदणी अर्ज भरा' : 'Proceed to Register'}
+                  {language === 'mr' ? 'नोंदणी अर्ज भरा' : language === 'hi' ? 'पंजीकरण फॉर्म भरें' : 'Proceed to Register'}
                 </Button>
               </div>
             </div>
@@ -325,12 +331,12 @@ export const UdyogDarshanPage: React.FC = () => {
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111827]">
-                  {language === 'mr' ? 'दौरा नोंदणी निश्चित झाली!' : 'Visit Registration Confirmed!'}
+                  {language === 'mr' ? 'अभ्यास दौरा नोंदणी यशस्वीरीत्या जतन झाली' : language === 'hi' ? 'अध्ययन दौरा पंजीकरण सफलतापूर्वक सहेजा गया' : 'Study Visit Registration Saved'}
                 </h3>
                 <p className="text-xs text-[#64748B]">
                   {language === 'mr'
-                    ? 'उद्योग दर्शन दौऱ्यासाठी आपली नोंदणी पूर्ण झाली आहे. अधिकृत सुरक्षा पास व बस व्यवस्था तपशील ईमेलद्वारे पाठवले जातील.'
-                    : 'Your registration for the industrial visit has been confirmed. Entry pass and transport guidelines will be emailed.'}
+                    ? 'ही नोंद उद्योग सेतू मंचावर जतन झाली असून यजमान क्लस्टर समन्वयकांद्वारे संपर्क साधला जाईल.'
+                    : language === 'hi' ? 'यह प्रविष्टि उद्योग सेतु मंच पर सहेज ली गई है और क्लस्टर समन्वयकों द्वारा संपर्क किया जाएगा।' : 'This registration is safely recorded and will be coordinated with the host cluster coordinators.'}
                 </p>
 
                 <div className="bg-[#F0FDF4] p-4 rounded-xl border border-[#DCFCE7] inline-block my-2">
@@ -344,8 +350,8 @@ export const UdyogDarshanPage: React.FC = () => {
 
                 <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-3 rounded-lg border border-[#DCFCE7]">
                   {language === 'mr'
-                    ? 'दौऱ्याच्या दिवशी वैध ओळखपत्र आणि सुरक्षा पादत्राणे (Safety Shoes) अनिवार्य आहेत.'
-                    : 'Valid photo ID and safety footwear are mandatory during industrial visits.'}
+                    ? 'प्रत्यक्ष भेट असल्यास, यजमान संस्थेकडून प्रवेश व सुरक्षा सूचना आधी तपासा.'
+                    : language === 'hi' ? 'वास्तविक दौरा होने पर, मेजबान संस्था से प्रवेश और सुरक्षा निर्देश पहले जांचें।' : 'For a real visit, confirm access and safety requirements with the host organisation.'}
                 </div>
 
                 <div className="pt-2">
@@ -357,31 +363,33 @@ export const UdyogDarshanPage: React.FC = () => {
             ) : (
               <div>
                 <div className="mb-4">
-                  <Badge variant="secondary">{selectedVisit.categoryMr}</Badge>
+                  <Badge variant="secondary">
+                    {language === 'mr' ? selectedVisit.categoryMr : language === 'hi' ? (selectedVisit.categoryHi || selectedVisit.categoryMr) : selectedVisit.categoryEn}
+                  </Badge>
                   <h3 className="text-lg font-bold text-[#111827] mt-2">
-                    {selectedVisit.titleMr}
+                    {language === 'mr' ? selectedVisit.titleMr : language === 'hi' ? selectedVisit.titleHi : selectedVisit.titleEn}
                   </h3>
                   <p className="text-xs text-[#64748B] mt-1">
-                    {selectedVisit.date} • {selectedVisit.locationMr}
+                    {selectedVisit.date} • {language === 'mr' ? selectedVisit.locationMr : language === 'hi' ? selectedVisit.locationHi : selectedVisit.locationEn}
                   </p>
                 </div>
 
                 <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                   <Input
-                    label={language === 'mr' ? 'उद्योजक / प्रतिनिधीचे पूर्ण नाव' : 'Participant Full Name'}
+                    label={language === 'mr' ? 'उद्योजक / प्रतिनिधीचे पूर्ण नाव' : language === 'hi' ? 'उद्यमी / प्रतिनिधि का पूरा नाम' : 'Participant Full Name'}
                     value={formData.participantName}
                     onChange={(e) => setFormData({ ...formData, participantName: e.target.value })}
                     error={formErrors.participantName}
-                    placeholder="उदा. राहुल अनिल महाजन"
+                    placeholder={language === 'mr' ? 'उदा. राहुल अनिल महाजन' : language === 'hi' ? 'उदा. राहुल अनिल महाजन' : 'e.g. Rahul Anil Mahajan'}
                     required
                   />
 
                   <Input
-                    label={language === 'mr' ? 'कंपनी / कारखान्याचे नाव' : 'Enterprise Name'}
+                    label={language === 'mr' ? 'कंपनी / कारखान्याचे नाव' : language === 'hi' ? 'कंपनी / कारखाने का नाम' : 'Enterprise Name'}
                     value={formData.businessName}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                     error={formErrors.businessName}
-                    placeholder="उदा. महाजन पॉलिमर्स प्रायव्हेट लिमिटेड"
+                    placeholder={language === 'mr' ? 'उदा. महाजन पॉलिमर्स प्रायव्हेट लिमिटेड' : language === 'hi' ? 'उदा. महाजन पॉलिमर्स प्राइवेट लिमिटेड' : 'e.g. Mahajan Polymers Pvt. Ltd.'}
                     required
                   />
 
@@ -391,7 +399,7 @@ export const UdyogDarshanPage: React.FC = () => {
                       value={formData.designation}
                       onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                       error={formErrors.designation}
-                      placeholder="उदा. उत्पादन प्रमुख / संचालक"
+                      placeholder={language === 'mr' ? 'उदा. उत्पादन प्रमुख / संचालक' : language === 'hi' ? 'उदा. उत्पादन प्रमुख / निदेशक' : 'e.g. Production Head / Director'}
                       required
                     />
 
@@ -400,7 +408,7 @@ export const UdyogDarshanPage: React.FC = () => {
                       value={formData.sector}
                       onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
                       error={formErrors.sector}
-                      placeholder="उदा. लॉजिस्टिक्स / प्लास्टिक"
+                      placeholder={language === 'mr' ? 'उदा. लॉजिस्टिक्स / प्लास्टिक' : language === 'hi' ? 'उदा. लॉजिस्टिक्स / प्लास्टिक' : 'e.g. Logistics / Plastic'}
                       required
                     />
                   </div>
@@ -438,6 +446,8 @@ export const UdyogDarshanPage: React.FC = () => {
                       <span>
                         {language === 'mr'
                           ? 'मी औद्योगिक सुरक्षिततेचे सर्व नियम व निर्देशांचे पालन करण्याचे मान्य करत आहे.'
+                          : language === 'hi'
+                          ? 'मैं औद्योगिक सुरक्षा के सभी नियमों और दिशा-निर्देशों का पालन करने की सहमति देता/देती हूं।'
                           : 'I agree to comply with all industrial safety guidelines and wear mandatory PPE during the visit.'}
                       </span>
                     </label>
@@ -447,7 +457,7 @@ export const UdyogDarshanPage: React.FC = () => {
                   </div>
 
                   <div className="text-[11px] text-[#136938] bg-[#F0FDF4] p-2.5 rounded border border-[#DCFCE7]">
-                    {language === 'mr' ? 'दौऱ्याच्या वेळी औद्योगिक सुरक्षा नियमांचे व मार्गदर्शकांचे पालन करणे आवश्यक आहे.' : 'Compliance with plant safety rules and site escort guidelines is mandatory.'}
+                    {language === 'mr' ? 'दौऱ्याच्या वेळी औद्योगिक सुरक्षा नियमांचे व मार्गदर्शकांचे पालन करणे आवश्यक आहे.' : language === 'hi' ? 'दौरे के समय औद्योगिक सुरक्षा नियमों एवं दिशा-निर्देशों का पालन आवश्यक है।' : 'Compliance with plant safety rules and site escort guidelines is mandatory.'}
                   </div>
 
                   <div className="pt-2 flex items-center justify-end gap-3">
@@ -455,7 +465,7 @@ export const UdyogDarshanPage: React.FC = () => {
                       {t.common.cancel}
                     </Button>
                     <Button variant="green" size="md" type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? t.common.loading : language === 'mr' ? 'दौरा नोंदणी पूर्ण करा' : 'Confirm Registration'}
+                      {isSubmitting ? t.common.loading : language === 'mr' ? 'दौरा नोंदणी पूर्ण करा' : language === 'hi' ? 'दौरा पंजीकरण पूर्ण करें' : 'Confirm Registration'}
                     </Button>
                   </div>
                 </form>

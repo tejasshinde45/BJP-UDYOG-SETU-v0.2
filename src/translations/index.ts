@@ -5,9 +5,14 @@ export const TRANSLATIONS = {
     // Navigation
     nav: {
       brand: 'भाजपा उद्योग सेतू',
-      brandSubtitle: 'महाराष्ट्र उद्योग संवाद आणि सहकार्य मंच',
-      initiativeTag: 'महाराष्ट्र राज्य औद्योगिक सहकार्य व संवाद पुढाकार',
+      brandSubtitle: 'महाराष्ट्र उद्योग माहिती व संवाद मंच',
+      initiativeTag: 'उद्योग माहिती व मार्गदर्शन उपक्रम',
       home: 'मुख्यपृष्ठ',
+      udyogSaarthi: 'उद्योग सारथी',
+      subsidyMentor: 'सब्सिडी मेंटर',
+      dprForms: 'DPR व प्रपत्रे',
+      b2b: 'उद्योग सेतू B2B',
+      digitalCard: 'डिजिटल कार्ड',
       samvaad: 'उद्योग संवाद',
       darshan: 'उद्योग दर्शन',
       grievance: 'तक्रार निवारण',
@@ -19,7 +24,7 @@ export const TRANSLATIONS = {
       admin: 'समन्वय व प्रशासकीय कक्ष',
       joinSetu: 'उद्योग सेतूशी जोडा',
       fileGrievance: 'तक्रार नोंदवा',
-      demoBadge: 'अधिकृत व्यासपीठ',
+      demoBadge: 'माहिती व मार्गदर्शन',
     },
     // Common
     common: {
@@ -48,7 +53,7 @@ export const TRANSLATIONS = {
       backToHome: 'मुख्यपृष्ठावर परत जा',
       loading: 'लोड होत आहे...',
       success: 'यशस्वी!',
-      demoDisclaimer: 'नोंदणी यशस्वी झाली असून संबंधित जिल्हा समन्वय कक्षाकडून आवश्यक कार्यवाही केली जाईल.',
+      demoDisclaimer: 'ही माहिती नोंद उद्योग सेतू व्यासपीठावर सुरक्षित ठेवली जाते; वैधानिक अर्जांसाठी अधिकृत शासकीय पोर्टलचा वापर करावा.',
       close: 'बंद करा',
       copyId: 'आयडी कॉपी करा',
       copied: 'कॉपी झाले!',
@@ -60,14 +65,14 @@ export const TRANSLATIONS = {
     },
     // Leadership Section
     leadership: {
-      heading: 'प्रेरणास्थान आणि मार्गदर्शक नेतृत्व',
-      subheading: 'विकसित भारताच्या संकल्पातून महाराष्ट्राच्या $1 Trillion अर्थव्यवस्थेसाठी अखंड कटिबद्धता',
+      heading: 'उद्योग संवादासाठी नेतृत्व संदर्भ',
+      subheading: 'उद्योग प्रतिनिधी व संघटनांच्या भेट विनंतीसाठी मार्गदर्शन व समन्वय मंच.',
       modiRole: 'मा. पंतप्रधान, भारत सरकार',
-      modiQuote: 'आत्मनिर्भर भारत आणि मेक इन इंडिया अभियानात महाराष्ट्राचे औद्योगिक योगदान देशासाठी दीपस्तंभासारखे आहे.',
-      fadnavisRole: 'मा. उपमुख्यमंत्री, महाराष्ट्र शासन',
-      fadnavisQuote: 'महाराष्ट्र हे उद्योग आणि नवोन्मेषाचे पॉवरहाऊस आहे. प्रत्येक उद्योजकाच्या पाठीशी आमचे सरकार खंबीरपणे उभे आहे.',
-      chavanRole: 'मा. कॅबिनेट मंत्री, महाराष्ट्र शासन',
-      chavanQuote: 'पायाभूत सुविधा, अखंड वीज, जलद परवानग्या आणि औद्योगिक सहकार्यातून महाराष्ट्राला अव्वल राखणे हाच आमचा ध्यास.',
+      modiQuote: 'आत्मनिर्भर भारत आणि मेक इन इंडियाच्या माध्यमातून देशाच्या औद्योगिक विकासाला नवी गती मिळत आहे.',
+      fadnavisRole: 'मुख्यमंत्री, महाराष्ट्र राज्य',
+      fadnavisQuote: 'महाराष्ट्राला ५ ट्रिलियन डॉलर अर्थव्यवस्थेचे इंजिन बनवण्यासाठी उद्योग-स्नेही धोरणे आणि गतिमान प्रशासन ही आमची बांधिलकी आहे.',
+      chavanRole: 'भाजप महाराष्ट्र नेतृत्व',
+      chavanQuote: 'उद्योजकांच्या अडचणींचे वेळेत निवारण आणि पायाभूत सुविधांचा विस्तार हाच समृद्ध महाराष्ट्राचा पाया आहे.',
     },
     // Categories & Statuses
     categories: {
@@ -98,9 +103,14 @@ export const TRANSLATIONS = {
     // Navigation
     nav: {
       brand: 'भाजपा उद्योग सेतु',
-      brandSubtitle: 'महाराष्ट्र उद्योग संवाद एवं सहयोग मंच',
-      initiativeTag: 'महाराष्ट्र राज्य औद्योगिक सहयोग एवं संवाद पहल',
+      brandSubtitle: 'महाराष्ट्र उद्योग जानकारी एवं संवाद मंच',
+      initiativeTag: 'उद्योग जानकारी और मार्गदर्शन पहल',
       home: 'मुख्यपृष्ठ',
+      udyogSaarthi: 'उद्योग सारथी',
+      subsidyMentor: 'सब्सिडी मेंटर',
+      dprForms: 'DPR और फॉर्म',
+      b2b: 'उद्योग सेतु B2B',
+      digitalCard: 'डिजिटल कार्ड',
       samvaad: 'उद्योग संवाद',
       darshan: 'उद्योग दर्शन',
       grievance: 'शिकायत निवारण',
@@ -112,7 +122,7 @@ export const TRANSLATIONS = {
       admin: 'समन्वय एवं प्रशासनिक कक्ष',
       joinSetu: 'उद्योग सेतु से जुड़ें',
       fileGrievance: 'शिकायत दर्ज करें',
-      demoBadge: 'आधिकारिक मंच',
+      demoBadge: 'जानकारी और मार्गदर्शन',
     },
     // Common
     common: {
@@ -141,7 +151,7 @@ export const TRANSLATIONS = {
       backToHome: 'मुख्यपृष्ठ पर लौटें',
       loading: 'लोड हो रहा है...',
       success: 'सफल!',
-      demoDisclaimer: 'पंजीकरण पूरा हो चुका है। संबंधित जिला समन्वय प्रकोष्ठ द्वारा आवश्यक कार्यवाही की जाएगी।',
+      demoDisclaimer: 'यह सूचना प्रविष्टि उद्योग सेतु मंच पर सुरक्षित रखी जाती है; वैधानिक आवेदनों के लिए आधिकारिक सरकारी पोर्टल का उपयोग करें।',
       close: 'बंद करें',
       copyId: 'आईडी कॉपी करें',
       copied: 'कॉपी हो गया!',
@@ -153,14 +163,14 @@ export const TRANSLATIONS = {
     },
     // Leadership Section
     leadership: {
-      heading: 'प्रेरणास्रोत एवं मार्गदर्शक नेतृत्व',
-      subheading: 'विकसित भारत के संकल्प से महाराष्ट्र की $1 Trillion अर्थव्यवस्था के लिए निरंतर प्रतिबद्धता',
+      heading: 'उद्योग संवाद के लिए नेतृत्व संदर्भ',
+      subheading: 'उद्योग प्रतिनिधियों और संगठनों के भेंट अनुरोध के लिए मार्गदर्शन एवं समन्वय मंच।',
       modiRole: 'माननीय प्रधानमंत्री, भारत सरकार',
-      modiQuote: 'आत्मनिर्भर भारत और मेक इन इंडिया अभियान में महाराष्ट्र का औद्योगिक योगदान देश के लिए प्रकाशस्तंभ है।',
-      fadnavisRole: 'माननीय उपमुख्यमंत्री, महाराष्ट्र शासन',
-      fadnavisQuote: 'महाराष्ट्र उद्योग और नवाचार का पावरहाउस है। प्रत्येक उद्यमी के साथ हमारी सरकार मजबूती से खड़ी है।',
-      chavanRole: 'माननीय कैबिनेट मंत्री, महाराष्ट्र शासन',
-      chavanQuote: 'बुनियादी ढांचा, निर्बाध बिजली, त्वरित अनुमतियां और औद्योगिक सहयोग से महाराष्ट्र को शीर्ष पर रखना हमारा ध्येय है।',
+      modiQuote: 'आत्मनिर्भर भारत और मेक इन इंडिया के माध्यम से देश के औद्योगिक विकास को नई गति मिल रही है।',
+      fadnavisRole: 'मुख्यमंत्री, महाराष्ट्र राज्य',
+      fadnavisQuote: 'महाराष्ट्र को ५ ट्रिलियन डॉलर अर्थव्यवस्था का इंजन बनाने के लिए उद्योग-अनुकूल नीतियां और सुगम प्रशासन हमारी प्राथमिकता है।',
+      chavanRole: 'भाजपा महाराष्ट्र नेतृत्व',
+      chavanQuote: 'उद्यमियों की समस्याओं का त्वरित समाधान और बुनियादी ढांचे का विस्तार ही समृद्ध महाराष्ट्र का आधार है।',
     },
     // Categories & Statuses
     categories: {
@@ -191,9 +201,14 @@ export const TRANSLATIONS = {
     // Navigation
     nav: {
       brand: 'BJP Udyog Setu',
-      brandSubtitle: 'Maharashtra Industrial Engagement Portal',
-      initiativeTag: 'Maharashtra State Industrial Collaboration & Engagement Initiative',
+      brandSubtitle: 'Maharashtra Industry Information & Dialogue',
+      initiativeTag: 'Industry information and guidance initiative',
       home: 'Home',
+      udyogSaarthi: 'Udyog Saarthi',
+      subsidyMentor: 'Subsidy Mentor',
+      dprForms: 'DPR & Forms',
+      b2b: 'Udyog Setu B2B',
+      digitalCard: 'Digital Card',
       samvaad: 'Udyog Samvaad',
       darshan: 'Udyog Darshan',
       grievance: 'Grievance Redressal',
@@ -205,7 +220,7 @@ export const TRANSLATIONS = {
       admin: 'Administration Desk',
       joinSetu: 'Join Udyog Setu',
       fileGrievance: 'File Grievance',
-      demoBadge: 'Official Portal',
+      demoBadge: 'Information & Guidance',
     },
     // Common
     common: {
@@ -234,7 +249,7 @@ export const TRANSLATIONS = {
       backToHome: 'Back to Home',
       loading: 'Loading...',
       success: 'Success!',
-      demoDisclaimer: 'Your submission has been logged. The designated district coordination cell will review and initiate follow-up.',
+      demoDisclaimer: 'This entry is safely recorded on the Udyog Setu platform; statutory filings must be made on official government portals.',
       close: 'Close',
       copyId: 'Copy ID',
       copied: 'Copied!',
@@ -246,14 +261,14 @@ export const TRANSLATIONS = {
     },
     // Leadership Section
     leadership: {
-      heading: 'Inspirational & Guiding Leadership',
-      subheading: "Committed to Maharashtra's $1 Trillion Economy Mission within the vision of Viksit Bharat",
+      heading: 'Leadership references for industry dialogue',
+      subheading: 'Guidance and coordination platform for industrial delegation meeting requests.',
       modiRole: 'Hon. Prime Minister of India',
-      modiQuote: "Maharashtra's industrial capability and MSME ecosystem serve as a powerhouse for Aatmanirbhar Bharat.",
-      fadnavisRole: 'Hon. Deputy Chief Minister, Govt. of Maharashtra',
-      fadnavisQuote: 'Maharashtra is the nation\'s growth engine. We are committed to frictionless enterprise and rapid problem solving.',
-      chavanRole: 'Hon. Cabinet Minister, Govt. of Maharashtra',
-      chavanQuote: 'World-class industrial infrastructure, reliable utilities, and transparent dialogue are our foremost priorities.',
+      modiQuote: 'Driving industrial growth through self-reliance, manufacturing excellence and global competitiveness.',
+      fadnavisRole: 'Chief Minister of Maharashtra',
+      fadnavisQuote: 'Dedicated to empowering Maharashtra as India’s growth engine through progressive industrial policies and rapid clearances.',
+      chavanRole: 'BJP Maharashtra leadership',
+      chavanQuote: 'Facilitating seamless infrastructure, prompt resolution of industrial grievances and sustainable enterprise growth.',
     },
     // Categories & Statuses
     categories: {
