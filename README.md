@@ -54,7 +54,15 @@
 
 ## 📊 System Architecture & Infographic
 
-The platform is designed around a reactive, component-driven client architecture with seamless client-side state persistence, real-time query filtering, and dynamic multi-language localization.
+<div align="center">
+  <img src="public/images/system-architecture.svg" alt="BJP Udyog Setu System Architecture & Service Ecosystem" width="100%" style="border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.22); margin: 16px 0;" />
+</div>
+
+<details>
+<summary><b>🔍 View Raw Architecture Diagram & Flowchart Specification</b></summary>
+<br>
+
+The platform is engineered around a reactive, component-driven client architecture with seamless client-side state persistence, real-time query filtering, and dynamic multi-language localization:
 
 ```mermaid
 flowchart TD
@@ -118,6 +126,7 @@ flowchart TD
     class AdminDashboard,StatusWorkflow admin;
     class LocalStore,SeedData,OfficialLinks storage;
 ```
+</details>
 
 ---
 
