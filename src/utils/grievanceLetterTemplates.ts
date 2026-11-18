@@ -1,8 +1,24 @@
 import type { GrievanceCategory } from '../types';
+import {
+  convertDesignation,
+  convertSector,
+  convertCompanyName,
+  convertLocationArea,
+  convertPersonName,
+  convertPeriod,
+  convertSubject,
+  convertDescription,
+} from './grievanceBilingualConverter';
 
 export type LetterLanguage = 'mr' | 'en';
 
 export type RecipientAuthorityKey =
+  | 'prime_minister'
+  | 'chief_minister'
+  | 'ravindra_chavan'
+  | 'industries_minister'
+  | 'district_collector'
+  | 'midc_ceo'
   | 'midc'
   | 'msedcl'
   | 'mpcb'
@@ -70,10 +86,155 @@ export interface RecipientAuthorityOption {
 
 export const RECIPIENT_AUTHORITY_OPTIONS: RecipientAuthorityOption[] = [
   {
+    key: 'prime_minister',
+    label: {
+      mr: 'मा. पंतप्रधान (श्री. नरेंद्र मोदी) — पंतप्रधान कार्यालय (PMO)',
+      en: 'Hon. Prime Minister (Shri Narendra Modi) — Prime Minister’s Office (PMO)',
+    },
+    defaultDesignation: {
+      mr: 'मा. पंतप्रधान महोदय (श्री. नरेंद्र मोदी)',
+      en: 'The Hon’ble Prime Minister of India (Shri Narendra Modi)',
+    },
+    defaultDepartment: {
+      mr: 'पंतप्रधान कार्यालय (PMO), भारत सरकार',
+      en: 'Prime Minister’s Office (PMO), Government of India',
+    },
+    defaultOffice: {
+      mr: 'सार्वजनिक तक्रार निवारण व औद्योगिक समन्वय कक्ष',
+      en: 'Public Grievance & Industrial Coordination Cell',
+    },
+    getDefaultAddress: (_district: string, lang: LetterLanguage) => {
+      return lang === 'mr'
+        ? 'साउथ ब्लॉक, रायसिना हिल, नवी दिल्ली - ११० ०११'
+        : 'South Block, Raisina Hill, New Delhi - 110 011';
+    },
+  },
+  {
+    key: 'chief_minister',
+    label: {
+      mr: 'मा. मुख्यमंत्री (श्री. देवेंद्र फडणवीस) — महाराष्ट्र शासन',
+      en: 'Hon. Chief Minister (Shri Devendra Fadnavis) — Govt. of Maharashtra',
+    },
+    defaultDesignation: {
+      mr: 'मा. मुख्यमंत्री महोदय (श्री. देवेंद्र फडणवीस)',
+      en: 'The Hon’ble Chief Minister of Maharashtra (Shri Devendra Fadnavis)',
+    },
+    defaultDepartment: {
+      mr: 'मुख्यमंत्री सचिवालय, महाराष्ट्र शासन',
+      en: 'Chief Minister’s Secretariat, Government of Maharashtra',
+    },
+    defaultOffice: {
+      mr: 'राज्य औद्योगिक विकास व जनहित तक्रार निवारण कक्ष',
+      en: 'State Industrial Development & Public Grievance Cell',
+    },
+    getDefaultAddress: (_district: string, lang: LetterLanguage) => {
+      return lang === 'mr'
+        ? '६ वा मजला, मुख्य इमारत, मंत्रालय, मादाम कामा मार्ग, मुंबई - ४०० ०३२'
+        : '6th Floor, Main Building, Mantralaya, Madam Cama Road, Nariman Point, Mumbai - 400 032';
+    },
+  },
+  {
+    key: 'ravindra_chavan',
+    label: {
+      mr: 'मा. रवींद्र चव्हाण (मंत्री / भाजप महाराष्ट्र नेतृत्व)',
+      en: 'Hon. Ravindra Chavan (Minister / BJP Maharashtra Leadership)',
+    },
+    defaultDesignation: {
+      mr: 'मा. ना. रवींद्र चव्हाण महोदय (मंत्री / भाजप महाराष्ट्र नेतृत्व)',
+      en: 'The Hon’ble Shri Ravindra Chavan (Minister / BJP Maharashtra Leadership)',
+    },
+    defaultDepartment: {
+      mr: 'सार्वजनिक बांधकाम विभाग व उद्योग समन्वय कक्ष, महाराष्ट्र शासन',
+      en: 'Public Works Department & Industry Facilitation Desk, Govt. of Maharashtra',
+    },
+    defaultOffice: {
+      mr: 'मंत्रालय कार्यालय व उद्योग तक्रार निवारण सचिवालय',
+      en: 'Ministerial Secretariat & Industrial Grievance Coordination Desk',
+    },
+    getDefaultAddress: (_district: string, lang: LetterLanguage) => {
+      return lang === 'mr'
+        ? 'मंत्रालय, मादाम कामा मार्ग, नरिमन पॉइंट, मुंबई - ४०० ०३२'
+        : 'Mantralaya, Madam Cama Road, Nariman Point, Mumbai - 400 032';
+    },
+  },
+  {
+    key: 'industries_minister',
+    label: {
+      mr: 'मा. उद्योग मंत्री — उद्योग विभाग, महाराष्ट्र शासन',
+      en: 'Hon. Minister for Industries — Industries Dept., Govt. of Maharashtra',
+    },
+    defaultDesignation: {
+      mr: 'मा. उद्योग मंत्री महोदय',
+      en: 'The Hon’ble Minister for Industries',
+    },
+    defaultDepartment: {
+      mr: 'उद्योग विभाग, महाराष्ट्र शासन',
+      en: 'Industries Department, Government of Maharashtra',
+    },
+    defaultOffice: {
+      mr: 'औद्योगिक धोरण व तक्रार निवारण कक्ष',
+      en: 'Industrial Policy & Grievance Redressal Cell',
+    },
+    getDefaultAddress: (_district: string, lang: LetterLanguage) => {
+      return lang === 'mr'
+        ? 'मंत्रालय, मादाम कामा मार्ग, मुंबई - ४०० ०३२'
+        : 'Mantralaya, Madam Cama Road, Nariman Point, Mumbai - 400 032';
+    },
+  },
+  {
+    key: 'district_collector',
+    label: {
+      mr: 'मा. जिल्हाधिकारी व जिल्हा दंडाधिकारी (जिल्हा प्रशासन)',
+      en: 'District Collector & District Magistrate (District Administration)',
+    },
+    defaultDesignation: {
+      mr: 'मा. जिल्हाधिकारी व जिल्हा दंडाधिकारी महोदय',
+      en: 'The District Collector & District Magistrate',
+    },
+    defaultDepartment: {
+      mr: 'जिल्हाधिकारी कार्यालय व जिल्हा प्रशासन महसूल विभाग',
+      en: 'Office of the District Collector & District Administration',
+    },
+    defaultOffice: {
+      mr: 'जिल्हा उद्योग मित्र (DIM) व तक्रार समन्वय कक्ष',
+      en: 'District Industry Facilitation & Grievance Redressal Cell',
+    },
+    getDefaultAddress: (district: string, lang: LetterLanguage) => {
+      const d = formatDistrictName(district, lang);
+      return lang === 'mr'
+        ? `जिल्हाधिकारी कार्यालय प्रशासकीय संकुल, ${d}`
+        : `District Collectorate, Administrative Complex, ${d}`;
+    },
+  },
+  {
+    key: 'midc_ceo',
+    label: {
+      mr: 'मुख्य कार्यकारी अधिकारी (CEO), MIDC मुख्यालय — मुंबई',
+      en: 'Chief Executive Officer (CEO), MIDC Headquarters — Mumbai',
+    },
+    defaultDesignation: {
+      mr: 'मा. मुख्य कार्यकारी अधिकारी (CEO)',
+      en: 'The Chief Executive Officer (CEO)',
+    },
+    defaultDepartment: {
+      mr: 'महाराष्ट्र औद्योगिक विकास महामंडळ (MIDC मुख्यालय)',
+      en: 'Maharashtra Industrial Development Corporation (MIDC Head Office)',
+    },
+    defaultOffice: {
+      mr: 'मध्यवर्ती पायाभूत सुविधा व तक्रार निवारण विभाग',
+      en: 'Central Infrastructure & Grievance Redressal Division',
+    },
+    getDefaultAddress: (_district: string, lang: LetterLanguage) => {
+      return lang === 'mr'
+        ? 'उद्योग सारथी, महाकाली गुंफा मार्ग, अंधेरी (पूर्व), मुंबई - ४०० ०९३'
+        : 'Udyog Sarathi, Mahakali Caves Road, Andheri (East), Mumbai - 400 093';
+    },
+  },
+  {
     key: 'midc',
     label: {
-      mr: 'महाराष्ट्र औद्योगिक विकास महामंडळ (MIDC)',
-      en: 'Maharashtra Industrial Development Corporation (MIDC)',
+      mr: 'महाराष्ट्र औद्योगिक विकास महामंडळ (MIDC) — प्रादेशिक कार्यालय',
+      en: 'Maharashtra Industrial Development Corporation (MIDC) — Regional Office',
     },
     defaultDesignation: {
       mr: 'मा. प्रादेशिक अधिकारी / कार्यकारी अभियंता',
@@ -411,27 +572,22 @@ export function buildInitialLetterFields(
   const recipientOffice = auth.defaultOffice[lang];
   const recipientAddress = auth.getDefaultAddress(formData.district || 'पुणे', lang);
 
-  const cleanLoc = formatCleanLocation(formData.locationArea, formData.district, lang);
-  const company = formData.businessName.trim() || (lang === 'mr' ? 'आमची औद्योगिक आस्थापना' : 'our industrial enterprise');
-  const contactName = formData.contactPerson.trim() || (lang === 'mr' ? 'अधिकृत प्रतिनिधी' : 'Authorized Signatory');
-  const designation = formData.designation.trim() || (lang === 'mr' ? 'अधिकृत संचालक / प्रतिनिधी' : 'Authorized Representative');
-  const rawSubject = formData.subject.trim() || (lang === 'mr' ? 'औद्योगिक अडचण निवारण' : 'Industrial Grievance Redressal');
-  const userDesc = formData.description.trim();
-  const period = formData.incidentPeriod?.trim();
+  const cleanLoc = convertLocationArea(formData.locationArea, formData.district, lang);
+  const company = convertCompanyName(formData.businessName, lang);
+  const contactName = convertPersonName(formData.contactPerson, lang);
+  const designation = convertDesignation(formData.designation, lang);
+  const sector = convertSector(formData.industryType, lang);
+  const subject = convertSubject(formData.subject, lang, formData.category);
+  const desc = convertDescription(formData.description, lang, formData.category, formData.incidentPeriod);
+  const period = convertPeriod(formData.incidentPeriod || '', lang);
 
   if (lang === 'mr') {
-    // Clean subject in Marathi
-    const subject = rawSubject.endsWith('बाबत') || rawSubject.endsWith('बाबत.')
-      ? rawSubject
-      : `${rawSubject} — सविनय तक्रार अर्ज बाबत.`;
-
     // Paragraph 1: Introduction of enterprise & location
-    const sectorText = formData.industryType ? `${formData.industryType.trim()} या` : 'उत्पादन';
-    const bodyParagraph1 = `आम्ही, मे. ${company}, ${cleanLoc} येथे कार्यरत असलेला औद्योगिक घटक असून, ${sectorText} क्षेत्रात कार्यरत आहोत.`;
+    const bodyParagraph1 = `आम्ही, मे. ${company}, ${cleanLoc} येथे कार्यरत असलेला औद्योगिक घटक असून, ${sector} क्षेत्रात कार्यरत आहोत.`;
 
     // Paragraph 2: Core grievance description + period + impact
-    const periodText = period ? ` सदर समस्या ${period} पासून सातत्याने भेडसावत आहे.` : '';
-    const bodyParagraph2 = `या अर्जाद्वारे आम्ही आपल्या कार्यालयाच्या निदर्शनास आणू इच्छितो की, ${userDesc}.${periodText} या अडचणीमुळे आमच्या दैनंदिन उत्पादन चक्रात मोठा व्यत्यय येत असून, कामगारांचा वेळ वाया जाणे, ग्राहकांचे पुरवठा आदेश रखडणे आणि आस्थापनेचे मोठे आर्थिक नुकसान होत आहे.`;
+    const periodText = period ? ` सदर समस्या ${period} सातत्याने भेडसावत आहे.` : '';
+    const bodyParagraph2 = `या अर्जाद्वारे आम्ही आपल्या कार्यालयाच्या निदर्शनास आणू इच्छितो की, ${desc}.${periodText} या अडचणीमुळे आमच्या दैनंदिन उत्पादन चक्रात मोठा व्यत्यय येत असून, कामगारांचा वेळ वाया जाणे, ग्राहकांचे पुरवठा आदेश रखडणे आणि आस्थापनेचे मोठे आर्थिक नुकसान होत आहे.`;
 
     // Paragraph 3: Requested action
     const bodyParagraph3 = `तरी उपरोक्त परिस्थितीचे गांभीर्य लक्षात घेऊन, आपल्या कार्यालयामार्फत तातडीने प्रत्यक्ष स्थळपाहणी करण्यात यावी आणि सदर समस्येचे कायमस्वरूपी निवारण करण्यासाठी आवश्यक ती योग्य कार्यवाही लवकरात लवकर करावी, ही नम्र विनंती.`;
@@ -453,15 +609,10 @@ export function buildInitialLetterFields(
   }
 
   // English Letter Content
-  const subject = rawSubject.toLowerCase().endsWith('reg.') || rawSubject.toLowerCase().endsWith('reg')
-    ? rawSubject
-    : `Grievance representation regarding ${rawSubject} – Reg.`;
+  const bodyParagraph1 = `We, M/s ${company}, are an operational industrial enterprise situated at ${cleanLoc}, engaged in the ${sector} sector.`;
 
-  const sectorText = formData.industryType ? `${formData.industryType.trim()}` : 'manufacturing';
-  const bodyParagraph1 = `We, M/s ${company}, are an operational industrial enterprise situated at ${cleanLoc}, engaged in the ${sectorText} sector.`;
-
-  const periodText = period ? ` This situation has been persisting since ${period}.` : '';
-  const bodyParagraph2 = `We wish to formally bring to your urgent attention a serious operational grievance concerning our facility. ${userDesc}.${periodText} Due to this ongoing disruption, our scheduled manufacturing operations and plant productivity are facing severe impediments, resulting in unannounced downtime, delayed client delivery schedules, and avoidable financial hardship.`;
+  const periodText = period ? ` This situation has been persisting ${period}.` : '';
+  const bodyParagraph2 = `We wish to formally bring to your urgent attention a serious operational grievance concerning our facility. ${desc}.${periodText} Due to this ongoing disruption, our scheduled manufacturing operations and plant productivity are facing severe impediments, resulting in unannounced downtime, delayed client delivery schedules, and avoidable financial hardship.`;
 
   const bodyParagraph3 = `In view of the gravity of the matter, we earnestly request your esteemed office to kindly conduct an immediate on-site inspection and initiate prompt remedial measures to resolve this grievance at the earliest.`;
 

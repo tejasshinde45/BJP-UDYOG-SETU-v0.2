@@ -37,7 +37,6 @@ import type {
 } from '../utils/grievanceLetterTemplates';
 import {
   printApplicationLetter,
-  downloadOfflineApplicationDocument,
 } from '../utils/grievancePrintService';
 import { GrievanceLetterPreview } from '../components/grievance/GrievanceLetterPreview';
 import { GrievanceLetterEditor } from '../components/grievance/GrievanceLetterEditor';
@@ -103,6 +102,12 @@ export const GrievancePage: React.FC = () => {
   const [letterLanguage, setLetterLanguage] = useState<LetterLanguage>(
     language === 'mr' ? 'mr' : 'en'
   );
+  const [prevLanguage, setPrevLanguage] = useState(language);
+  if (language !== prevLanguage) {
+    setPrevLanguage(language);
+    setLetterLanguage(language === 'mr' ? 'mr' : 'en');
+  }
+
   const [selectedRecipientKey, setSelectedRecipientKey] = useState<RecipientAuthorityKey>(() =>
     getDefaultRecipientKeyForCategory(category)
   );
@@ -179,10 +184,6 @@ export const GrievancePage: React.FC = () => {
 
   const handlePrintLetter = async () => {
     await printApplicationLetter(currentGeneratedLetter);
-  };
-
-  const handleDownloadHtml = () => {
-    downloadOfflineApplicationDocument(currentGeneratedLetter);
   };
 
   // Maharashtra Industrial Districts
@@ -1056,15 +1057,8 @@ export const GrievancePage: React.FC = () => {
                       {/* 4A. Summary & Letter Generation Header */}
                       <GrievanceLetterSummary
                         referenceId={referenceId}
-                        applicantName={contactPerson}
-                        designation={designation}
-                        businessName={businessName}
-                        categoryLabel={
-                          categoriesList.find((c) => c.key === category)?.label || category
-                        }
                         selectedRecipientKey={selectedRecipientKey}
                         selectedLanguage={letterLanguage}
-                        documentsCount={files.length}
                         isEditing={isEditingLetter}
                         isCustomEdited={isCustomEdited}
                         onLanguageChange={(newLang) => {
@@ -1078,9 +1072,6 @@ export const GrievancePage: React.FC = () => {
                           }));
                         }}
                         onToggleEdit={() => setIsEditingLetter((prev) => !prev)}
-                        onDownloadPdf={handleDownloadPdf}
-                        onPrint={handlePrintLetter}
-                        onDownloadHtml={handleDownloadHtml}
                         onResetDraft={() => {
                           setEditedFields((prev) => ({
                             ...prev,
@@ -1205,7 +1196,9 @@ export const GrievancePage: React.FC = () => {
                             </span>
                           </h3>
                           <span className="text-xs text-[#64748B] font-medium">
-                            {letterLanguage === 'mr' ? 'भाषा: मराठी (देवनागरी)' : 'Language: English (Formal)'}
+                            {language === 'mr'
+                              ? `अर्जाची भाषा: ${letterLanguage === 'mr' ? 'मराठी (देवनागरी)' : 'English (Formal)'}`
+                              : `Letter Language: ${letterLanguage === 'mr' ? 'Marathi (Devanagari)' : 'English (Formal)'}`}
                           </span>
                         </div>
 

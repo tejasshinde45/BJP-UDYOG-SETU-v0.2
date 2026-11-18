@@ -1,10 +1,11 @@
 import React from 'react';
 import type { EditableLetterFields, LetterLanguage } from '../../utils/grievanceLetterTemplates';
 import { RotateCcw, Check } from 'lucide-react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface GrievanceLetterEditorProps {
   fields: EditableLetterFields;
-  language: LetterLanguage;
+  language?: LetterLanguage;
   onChange: (updated: EditableLetterFields) => void;
   onReset: () => void;
   onDoneEditing: () => void;
@@ -12,12 +13,12 @@ interface GrievanceLetterEditorProps {
 
 export const GrievanceLetterEditor: React.FC<GrievanceLetterEditorProps> = ({
   fields,
-  language,
   onChange,
   onReset,
   onDoneEditing,
 }) => {
-  const isMarathi = language === 'mr';
+  const { language: uiLang } = useLanguage();
+  const isMarathi = uiLang === 'mr';
 
   const updateField = (key: keyof EditableLetterFields, value: string) => {
     onChange({
