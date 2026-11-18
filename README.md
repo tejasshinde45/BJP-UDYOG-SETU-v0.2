@@ -42,23 +42,9 @@
 
 ## 🏛️ Strategic Pillars
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           BJP UDYOG SETU PLATFORM                           │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │
-         ┌─────────────────────────────┼─────────────────────────────┐
-         ▼                             ▼                             ▼
-┌──────────────────┐          ┌──────────────────┐          ┌──────────────────┐
-│ 🚀 ENTERPRISE    │          │ 🤝 B2B & SUPPLY   │          │ ⚖️ ADVOCACY &    │
-│    ENABLEMENT    │          │    ECOSYSTEM     │          │    DIALOGUE      │
-├──────────────────┤          ├──────────────────┤          ├──────────────────┤
-│ • Udyog Saarthi  │          │ • Local Vendor   │          │ • Grievance Desk │
-│ • Subsidy Mentor │          │   Directory      │          │ • Track Status   │
-│ • DPR & Forms    │          │ • GeM Onboarding │          │ • Leadership Meet│
-│ • Digital Cards  │          │ • Sourcing Reqs  │          │ • Niti Manthan   │
-└──────────────────┘          └──────────────────┘          └──────────────────┘
-```
+<div align="center">
+  <img src="public/images/strategic-pillars.jpg" alt="BJP Udyog Setu Strategic Pillars Infographic" width="100%" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin-bottom: 20px;" />
+</div>
 
 1. **Enterprise Enablement**: End-to-end guidance from conceptualization and land acquisition to statutory clearances and financial subsidies under the Maharashtra Package Scheme of Incentives (PSI).
 2. **B2B & Supply Chain Ecosystem**: Connecting regional industrial clusters, supporting MSMEs in public procurement via GeM (Government e-Marketplace), and generating digital smart business cards.
